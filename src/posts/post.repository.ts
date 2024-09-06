@@ -35,4 +35,14 @@ export class PostRepository extends Repository<Posts> {
 
         return post;
     }
+
+    // 게시물 상태 변경
+    async updatePostStatus(id: number, status: PostStatus): Promise<Posts> {
+        const post = await this.getPostById(id);
+
+        post.status = status;
+        await this.save(post);
+
+        return post
+    }
 }

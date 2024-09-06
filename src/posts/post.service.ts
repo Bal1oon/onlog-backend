@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Posts } from './post.entity';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
+import { PostStatus } from './post-status.enum';
 
 @Injectable()
 export class PostService {
@@ -20,5 +21,10 @@ export class PostService {
     // 게시물 생성
     createPost(createPostDto: CreatePostDto): Promise<Posts> {
         return this.postRepository.createPost(createPostDto);
+    }
+
+    // 게시물 상태 변경
+    updatePostStatus(id: number, status: PostStatus): Promise<Posts> {
+        return this.postRepository.updatePostStatus(id, status);
     }
 }
