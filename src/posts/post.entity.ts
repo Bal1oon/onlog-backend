@@ -1,8 +1,9 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PostStatus } from "./post-status.enum";
+import { User } from "src/users/user.entity";
 
 @Entity()
-export class Posts extends BaseEntity {
+export class PostEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -15,12 +16,12 @@ export class Posts extends BaseEntity {
     @Column()
     status: PostStatus;
 
-    @Column()
-    like: number;
-
     // @OneToMany(type => Comment, comment => comment.post, { eager: false })
     // comment: Comment;
 
-    // @ManyToOne(type => User, user => user.posts, {eager: false})
-    // user: User;
+    @ManyToOne(type => User, user => user.posts, { eager: false })
+    user: User;
+
+    @ManyToMany(type => User, user => user.likedPosts)
+    likedBy: User[];
 }

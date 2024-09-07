@@ -1,34 +1,33 @@
 import { Injectable } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
-import { Posts } from "./post.entity";
+import { PostEntity } from "./post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostStatus } from "./post-status.enum";
 
 @Injectable()
-export class PostRepository extends Repository<Posts> {
+export class PostRepository extends Repository<PostEntity> {
     constructor(private dataSource: DataSource) {
-        super(Posts, dataSource.createEntityManager());
+        super(PostEntity, dataSource.createEntityManager());
     }
 
     // 전체 게시물 가져오기
-    async getAllPosts(): Promise<Posts[]> {
+    async getAllPosts(): Promise<PostEntity[]> {
         return this.find();
     }
 
     // 특정 게시물 가져오기
-    async getPostById(id: number): Promise<Posts> {
+    async getPostById(id: number): Promise<PostEntity> {
         return this.findOne({ where: { id } });
     }
 
     // 게시물 생성
-    async createPost(createPostDto: CreatePostDto): Promise<Posts> {
+    async createPost(createPostDto: CreatePostDto): Promise<PostEntity> {
         const { title, description } = createPostDto;
 
         const post = this.create({
             title,
             description,
             status: PostStatus.PUBLIC,
-            like: 0
         })
 
         await this.save(post);
@@ -37,7 +36,7 @@ export class PostRepository extends Repository<Posts> {
     }
 
     // 게시물 상태 변경
-    async updatePostStatus(id: number, status: PostStatus): Promise<Posts> {
+    async updatePostStatus(id: number, status: PostStatus): Promise<PostEntity> {
         const post = await this.getPostById(id);
 
         post.status = status;

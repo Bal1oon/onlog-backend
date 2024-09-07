@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PostService } from './post.service';
-import { Posts } from './post.entity';
+import { PostEntity } from './post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostStatusValidationPipe } from './pipes/post-status-validation.pipe';
 import { PostStatus } from './post-status.enum';
@@ -12,18 +12,18 @@ export class PostController {
     ) {}
 
     @Get('/posts')
-    getAllPosts(): Promise<Posts[]> {
+    getAllPosts(): Promise<PostEntity[]> {
         return this.postService.getAllPosts();
     }
 
     @Get('/posts/:id')
-    getPostById(@Param('id') id: number): Promise<Posts> {
+    getPostById(@Param('id') id: number): Promise<PostEntity> {
         return this.postService.getPostById(id);
     }
 
     @Post('/posts')
     @UsePipes(ValidationPipe)
-    createPost(@Body() createPostDto: CreatePostDto): Promise<Posts> {
+    createPost(@Body() createPostDto: CreatePostDto): Promise<PostEntity> {
         return this.postService.createPost(createPostDto);
     }
 
