@@ -1,3 +1,4 @@
+import { CommentEntity } from "src/comments/comment.entity";
 import { PostEntity } from "src/posts/post.entity";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 
@@ -24,6 +25,9 @@ export class User extends BaseEntity {
 
     @OneToMany(type => PostEntity, posts => posts.user, { eager: true })
     posts: PostEntity[]
+
+    @OneToMany(type => CommentEntity, comments => comments.user, { eager: true })
+    comments: CommentEntity[]
 
     @ManyToMany(type => PostEntity, post => post.likedBy, { eager: true })
     @JoinTable()
