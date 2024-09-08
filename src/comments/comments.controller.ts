@@ -28,4 +28,19 @@ export class CommentsController {
         this.logger.verbose(`User ${ user.username } creating a new comment on the post ${ createCommentDto.postId }`);
         return this.commentService.createComment(createCommentDto, user);
     }
+
+    @Post('/:postId/comments/:parentCommentId/replies')
+    @UsePipes(ValidationPipe)
+    createReply(
+        @Param('postId') postId: number,
+        @Param('parentCommentId') parentCommentId: number,
+        @Body(ValidationPipe) createCommentDto: CreateCommentDto,
+        @Request() req
+    ): Promise<CommentEntity> {
+        const user: User = req.user;
+        createCommentDto.postId = postId;
+        createCommentDto.parentCommentId = parentCommentId;
+        this.logger.verbose(`User ${ user.username } creating a reply on comment ${ parentCommentId }`);
+        return this.commentService.createComment(createCommentDto, user);
+    }
 }
