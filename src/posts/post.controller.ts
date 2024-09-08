@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostEntity } from './post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -10,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('posts')
 @UseGuards(AuthGuard())
 export class PostController {
+    private logger = new Logger('PostController');
     constructor (
         private postService: PostService
     ) {}
@@ -31,14 +32,18 @@ export class PostController {
         @Request() req
     ): Promise<PostEntity> {
         const user: User = req.user;
+        this.logger.verbose(`User ${ user.username } creating a new post`);
         return this.postService.createPost(createPostDto, user);
     }
 
     @Patch('/:id/status')
     updatePostStatus(
         @Param('id', ParseIntPipe) id: number,
-        @Body('status', PostStatusValidationPipe) status: PostStatus
+        @Body('status', PostStatusValidationPipe) status: PostStatus,
+        @Request() req
     ) {
-        return this.postService.updatePostStatus(id, status);
+        const user: User = req.user;
+        this.logger.verbose(`User ${ user.username } updating post ${ id } status to ${ status }`);
+        return this.postService.updatePostStatus(id, status, user);
     }
 }

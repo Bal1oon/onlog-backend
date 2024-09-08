@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PostEntity } from './post.entity';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -25,7 +25,13 @@ export class PostService {
     }
 
     // 게시물 상태 변경
-    updatePostStatus(id: number, status: PostStatus): Promise<PostEntity> {
+    async updatePostStatus(id: number, status: PostStatus, user:User): Promise<PostEntity> {
+        const post = await this.getPostById(id);
+
+        if (post.user.id !== user.id) {
+            throw new UnauthorizedException('You can only update your own posts');
+        }
+
         return this.postRepository.updatePostStatus(id, status);
     }
 }
