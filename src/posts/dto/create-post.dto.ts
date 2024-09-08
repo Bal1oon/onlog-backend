@@ -5,5 +5,5 @@ export class CreatePostDto {
     title: string;
 
     @IsNotEmpty()
-    description: string;
+    content: string;
 }

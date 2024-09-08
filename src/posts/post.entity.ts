@@ -12,7 +12,7 @@ export class PostEntity extends BaseEntity {
     title: string;
 
     @Column()
-    description: string;
+    content: string;
 
     @Column()
     status: PostStatus;
