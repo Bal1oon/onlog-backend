@@ -3,7 +3,7 @@ import { DataSource, Repository } from "typeorm";
 import { User } from "./user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { AuthCredentialDto } from "src/auth/dto/auth-credential.dto";
-import * as bycrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -12,11 +12,23 @@ export class UserRepository extends Repository<User> {
     }
 
     async getUserByEmail(email: string): Promise<User> {
-        return this.findOne({ where: { email } });
+        const found = await this.findOne({ where: { email } });
+        
+        if (!found) {
+            throw new NotFoundException(`Can't find User with id ${ email }`);
+        }
+
+        return found;
     }
 
     async getUserByUsername(username: string): Promise<User> {
-        return this.findOne({ where: { username } });
+        const found = await this.findOne({ where: { username } });
+        
+        if (!found) {
+            throw new NotFoundException(`Can't find User with id ${ username }`);
+        }
+
+        return found;
     }
 
     async getUserById(id: number): Promise<User> {
@@ -32,8 +44,8 @@ export class UserRepository extends Repository<User> {
     async createUser(authCredentialDto: AuthCredentialDto): Promise<void> {
         const { email, username, password } = authCredentialDto;
 
-        const salt = await bycrypt.genSalt();
-        const hashedPassword = await bycrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         const user = this.create({
             email,
@@ -60,10 +72,14 @@ export class UserRepository extends Repository<User> {
     async updateUser(updateUserDto: UpdateUserDto, user: User): Promise<User> {
         const { username, password, description, profileImage } = updateUserDto;
         
-        user.username = username;
-        user.password = password;
-        user.description = description;
-        user.profileImage = profileImage;
+        user.username = username ?? user.username;
+        user.description = description ?? user.description;
+        user.profileImage = profileImage ?? user.profileImage;
+        if (password) {
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(password, salt);
+            user.password = hashedPassword;
+        }
 
         await this.save(user);
         return user;
