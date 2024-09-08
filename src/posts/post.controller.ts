@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostEntity } from './post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostStatusValidationPipe } from './pipes/post-status-validation.pipe';
 import { PostStatus } from './post-status.enum';
 import { User } from 'src/users/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('posts')
+@UseGuards(AuthGuard())
 export class PostController {
     constructor (
         private postService: PostService

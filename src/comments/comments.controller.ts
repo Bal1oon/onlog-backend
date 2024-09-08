@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Logger, Param, Post, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from 'src/users/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('posts')
+@UseGuards(AuthGuard())
 export class CommentsController {
     private logger = new Logger('CommentsController')
     constructor(private commentService: CommentsService) {}
@@ -17,7 +19,7 @@ export class CommentsController {
     @Post('/:postId/comments')
     @UsePipes(ValidationPipe)
     createComment(
-        @Body() createCommentDto: CreateCommentDto,
+        @Body(ValidationPipe) createCommentDto: CreateCommentDto,
         @Request() req
     ): Promise<CommentEntity> {
         const user: User = req.user;
