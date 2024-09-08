@@ -22,6 +22,14 @@ export class CommentsService {
             throw new NotFoundException('Post not found');
         }
 
-        return this.commentRepository.createComment(createCommentDto, user, post);
+        let parentComment: CommentEntity | undefined;
+        if (createCommentDto.parentCommentId) {
+            parentComment = await this.commentRepository.getCommentById(createCommentDto.parentCommentId);
+            if (!parentComment) {
+                throw new NotFoundException('Parent comment not found');
+            }
+        }
+
+        return this.commentRepository.createComment(createCommentDto, user, post, parentComment);
     }
 }

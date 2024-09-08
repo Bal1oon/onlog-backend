@@ -12,16 +12,24 @@ export class CommentRepository extends Repository<CommentEntity> {
     }
 
     async getAllCommentsByPostId(postId: number): Promise<CommentEntity[]> {
-        return this.find({ where: { post: { id: postId } }, relations: ['user'] });
+        return this.find({ 
+            where: { post: { id: postId } },
+            relations: ['user', 'replies'] 
+        });
     }
 
-    async createComment(createCommentDto: CreateCommentDto, user: User, post: PostEntity): Promise<CommentEntity> {
+    async getCommentById(id: number): Promise<CommentEntity> {
+        return this.findOne({ where: { id } });
+    }
+
+    async createComment(createCommentDto: CreateCommentDto, user: User, post: PostEntity, parentComment?: CommentEntity): Promise<CommentEntity> {
         const content = createCommentDto.content;
 
         const comment = this.create({
             content,
             user,
-            post
+            post,
+            parentComment
         })
 
         await this.save(comment);
