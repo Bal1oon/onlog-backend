@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PostEntity } from './post.entity';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -16,7 +16,13 @@ export class PostService {
 
     // 특정 게시물 가져오기
     getPostById(id: number): Promise<PostEntity> {
-        return this.postRepository.getPostById(id);
+        const found = this.postRepository.getPostById(id);
+
+        if (!found) {
+            throw new NotFoundException(`Post with ID ${ id } not found`);
+        }
+
+        return found;
     }
 
     // 게시물 생성

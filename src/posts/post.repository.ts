@@ -18,7 +18,7 @@ export class PostRepository extends Repository<PostEntity> {
 
     // 특정 게시물 가져오기
     async getPostById(id: number): Promise<PostEntity> {
-        return this.findOne({ where: { id } });
+        return this.findOne({ where: { id } , relations : ['user']});
     }
 
     // 게시물 생성
