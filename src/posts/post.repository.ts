@@ -3,6 +3,7 @@ import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostStatus } from "./post-status.enum";
+import { User } from "src/users/user.entity";
 
 @Injectable()
 export class PostRepository extends Repository<PostEntity> {
@@ -21,13 +22,14 @@ export class PostRepository extends Repository<PostEntity> {
     }
 
     // 게시물 생성
-    async createPost(createPostDto: CreatePostDto): Promise<PostEntity> {
+    async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
         const { title, description } = createPostDto;
 
         const post = this.create({
             title,
             description,
             status: PostStatus.PUBLIC,
+            user
         })
 
         await this.save(post);

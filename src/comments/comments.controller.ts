@@ -4,17 +4,17 @@ import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from 'src/users/user.entity';
 
-@Controller('comments')
+@Controller('posts')
 export class CommentsController {
     private logger = new Logger('CommentsController')
     constructor(private commentService: CommentsService) {}
 
-    @Get('/posts/:postId/comments')
+    @Get('/:postId/comments')
     getAllCommentsByPostId(@Param('postId') postId: number): Promise<CommentEntity[]> {
         return this.commentService.getAllCommentsByPostId(postId);
     };
 
-    @Post('/posts/:id/comments')
+    @Post('/:postId/comments')
     @UsePipes(ValidationPipe)
     createComment(
         @Body() createCommentDto: CreateCommentDto,
