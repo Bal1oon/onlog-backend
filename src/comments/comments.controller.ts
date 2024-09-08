@@ -20,7 +20,7 @@ export class CommentsController {
     @UsePipes(ValidationPipe)
     createComment(
         @Param('postId') postId: number,
-        @Body(ValidationPipe) createCommentDto: CreateCommentDto,
+        @Body() createCommentDto: CreateCommentDto,
         @Request() req
     ): Promise<CommentEntity> {
         const user: User = req.user;
@@ -34,7 +34,7 @@ export class CommentsController {
     createReply(
         @Param('postId') postId: number,
         @Param('parentCommentId') parentCommentId: number,
-        @Body(ValidationPipe) createCommentDto: CreateCommentDto,
+        @Body() createCommentDto: CreateCommentDto,
         @Request() req
     ): Promise<CommentEntity> {
         const user: User = req.user;
