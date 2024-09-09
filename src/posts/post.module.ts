@@ -13,6 +13,6 @@ import { AuthModule } from 'src/auth/auth.module';
   ],
   controllers: [PostController],
   providers: [PostService, PostRepository],
-  exports: [PostRepository]
+  exports: [PostService]
 })
 export class PostModule {}
