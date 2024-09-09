@@ -12,13 +12,24 @@ export class PostRepository extends Repository<PostEntity> {
     }
 
     // 전체 게시물 가져오기
-    async getAllPosts(): Promise<PostEntity[]> {
-        return this.find({ where: { deletedAt: null } });
+    async getAllPosts(userId: number): Promise<PostEntity[]> {
+        return this.find({
+            where: [
+                { deletedAt: null, status: PostStatus.PUBLIC },
+                { deletedAt: null, status: PostStatus.PRIVATE, user: { id: userId } }
+            ]
+        });
     }
 
     // 특정 게시물 가져오기
-    async getPostById(id: number): Promise<PostEntity> {
-        return this.findOne({ where: { id, deletedAt: null }, relations: ['user'] });
+    async getPostById(id: number, userId: number): Promise<PostEntity> {
+        return this.findOne({
+            where: [
+                { id, deletedAt: null, status: PostStatus.PUBLIC },
+                { id, deletedAt: null, status: PostStatus.PRIVATE, user: { id: userId }}
+            ],
+            relations: ['user']
+        });
     }
 
     // 게시물 생성

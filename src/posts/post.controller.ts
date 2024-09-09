@@ -16,13 +16,21 @@ export class PostController {
     ) {}
 
     @Get()
-    getAllPosts(): Promise<PostEntity[]> {
-        return this.postService.getAllPosts();
+    getAllPosts(
+        @Request() req
+    ): Promise<PostEntity[]> {
+        const user: User = req.user;
+        const userId: number = user.id;
+        return this.postService.getAllPosts(userId);
     }
 
     @Get('/:id')
-    getPostById(@Param('id') id: number): Promise<PostEntity> {
-        return this.postService.getPostById(id);
+    getPostById(
+        @Param('id') id: number,
+        @Request() req
+    ): Promise<PostEntity> {
+        const userId:number = req.user.id;
+        return this.postService.getPostById(id, userId);
     }
 
     @Post()

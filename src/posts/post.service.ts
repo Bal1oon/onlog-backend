@@ -10,13 +10,13 @@ export class PostService {
     constructor(private readonly postRepository: PostRepository) {}
 
     // 게시물 전체 가져오기
-    getAllPosts(): Promise<PostEntity[]> {
-        return this.postRepository.getAllPosts();
+    getAllPosts(userId: number): Promise<PostEntity[]> {
+        return this.postRepository.getAllPosts(userId);
     }
 
     // 특정 게시물 가져오기
-    async getPostById(id: number): Promise<PostEntity> {
-        const found = await this.postRepository.getPostById(id);
+    async getPostById(id: number, userId: number): Promise<PostEntity> {
+        const found = await this.postRepository.getPostById(id, userId);
 
         if (!found) {
             throw new NotFoundException(`Post with ID ${ id } not found`);
