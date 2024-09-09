@@ -6,62 +6,83 @@ import { PostStatusValidationPipe } from './pipes/post-status-validation.pipe';
 import { PostStatus } from './post-status.enum';
 import { User } from 'src/users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { CustomAuthGuard } from '../guards/custom-auth.guard';
 
 @Controller('posts')
-@UseGuards(AuthGuard())
 export class PostController {
     private logger = new Logger('PostController');
-    constructor (
+    constructor(
         private postService: PostService
     ) {}
 
+    // @Get()
+    // getAllPosts(
+    //     @Request() req
+    // ): Promise<PostEntity[]> {
+    //     const userId: number = req.user.id;
+    //     return this.postService.getAllPosts(userId);
+    // }
+
     @Get()
+    @UseGuards(CustomAuthGuard)
     getAllPosts(
         @Request() req
     ): Promise<PostEntity[]> {
-        const user: User = req.user;
-        const userId: number = user.id;
+        const userId: number = req.user ? req.user.id : null;
+
+        if (userId) { this.logger.log(`User ${userId} trying to access all posts`); }
+        else { this.logger.warn(`Anonymous user trying to access all posts`); }
+
         return this.postService.getAllPosts(userId);
     }
 
+    // @Get('/:id')
+    // getPostById(
+    //     @Param('id', ParseIntPipe) id: number,
+    //     @Request() req
+    // ): Promise<PostEntity> {
+    //     const userId:number = req.user.id;
+    //     return this.postService.getPostById(id, userId);
+    // }
     @Get('/:id')
     getPostById(
-        @Param('id') id: number,
-        @Request() req
+        @Param('id',ParseIntPipe) id: number
     ): Promise<PostEntity> {
-        const userId:number = req.user.id;
-        return this.postService.getPostById(id, userId);
+        return this.postService.getPostById(id);
     }
 
     @Post()
     @UsePipes(ValidationPipe)
+    @UseGuards(AuthGuard())
     createPost(
         @Body() createPostDto: CreatePostDto,
         @Request() req
     ): Promise<PostEntity> {
         const user: User = req.user;
-        this.logger.verbose(`User ${ user.username } creating a new post`);
+        this.logger.verbose(`User ${user.username} creating a new post`);
         return this.postService.createPost(createPostDto, user);
     }
 
     @Patch('/:id/status')
+    @UseGuards(AuthGuard())
     updatePostStatus(
         @Param('id', ParseIntPipe) id: number,
         @Body('status', PostStatusValidationPipe) status: PostStatus,
         @Request() req
     ) {
         const user: User = req.user;
-        this.logger.verbose(`User ${ user.username } updating post ${ id } status to ${ status }`);
+        this.logger.verbose(`User ${user.username} updating post ${id} status to ${status}`);
         return this.postService.updatePostStatus(id, status, user);
     }
 
     @Patch('/:id/delete')
+    @UseGuards(AuthGuard())
     deletePost(
         @Param('id', ParseIntPipe) id: number,
         @Request() req
     ) {
         const user: User = req.user;
-        this.logger.verbose(`User ${ user.username } deleting post ${ id }`);
+        this.logger.verbose(`User ${user.username} deleting post ${id}`);
         return this.postService.deletePost(id, user);
     }
 }
