@@ -13,12 +13,12 @@ export class PostRepository extends Repository<PostEntity> {
 
     // 전체 게시물 가져오기
     async getAllPosts(): Promise<PostEntity[]> {
-        return this.find();
+        return this.find({ where: { deletedAt: null } });
     }
 
     // 특정 게시물 가져오기
     async getPostById(id: number): Promise<PostEntity> {
-        return this.findOne({ where: { id } , relations : ['user']});
+        return this.findOne({ where: { id, deletedAt: null }, relations: ['user'] });
     }
 
     // 게시물 생성
@@ -38,9 +38,7 @@ export class PostRepository extends Repository<PostEntity> {
     }
 
     // 게시물 상태 변경
-    async updatePostStatus(id: number, status: PostStatus): Promise<PostEntity> {
-        const post = await this.getPostById(id);
-
+    async updatePostStatus(post: PostEntity, status: PostStatus): Promise<PostEntity> {
         post.status = status;
         await this.save(post);
 

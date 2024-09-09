@@ -38,6 +38,6 @@ export class PostService {
             throw new UnauthorizedException('You can only update your own posts');
         }
 
-        return this.postRepository.updatePostStatus(id, status);
+        return this.postRepository.updatePostStatus(post, status);
     }
 }
