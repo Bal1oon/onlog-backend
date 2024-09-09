@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -12,14 +12,14 @@ export class CommentsController {
     constructor(private commentService: CommentsService) {}
 
     @Get('/:postId/comments')
-    getAllCommentsByPostId(@Param('postId') postId: number): Promise<CommentEntity[]> {
+    getAllCommentsByPostId(@Param('postId', ParseIntPipe) postId: number): Promise<CommentEntity[]> {
         return this.commentService.getAllCommentsByPostId(postId);
     };
 
     @Post('/:postId/comments')
     @UsePipes(ValidationPipe)
     createComment(
-        @Param('postId') postId: number,
+        @Param('postId', ParseIntPipe) postId: number,
         @Body() createCommentDto: CreateCommentDto,
         @Request() req
     ): Promise<CommentEntity> {
@@ -32,7 +32,7 @@ export class CommentsController {
     @Post('/:postId/comments/:parentCommentId/replies')
     @UsePipes(ValidationPipe)
     createReply(
-        @Param('postId') postId: number,
+        @Param('postId', ParseIntPipe) postId: number,
         @Param('parentCommentId') parentCommentId: number,
         @Body() createCommentDto: CreateCommentDto,
         @Request() req
