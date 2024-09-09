@@ -44,4 +44,11 @@ export class PostRepository extends Repository<PostEntity> {
 
         return post
     }
+
+    async deletePost(post: PostEntity): Promise<PostEntity> {
+        post.deletedAt = new Date();
+        await this.save(post)
+
+        return post;
+    }
 }

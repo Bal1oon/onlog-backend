@@ -46,4 +46,14 @@ export class PostController {
         this.logger.verbose(`User ${ user.username } updating post ${ id } status to ${ status }`);
         return this.postService.updatePostStatus(id, status, user);
     }
+
+    @Patch('/:id/delete')
+    deletePost(
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req
+    ) {
+        const user: User = req.user;
+        this.logger.verbose(`User ${ user.username } deleting post ${ id }`);
+        return this.postService.deletePost(id, user);
+    }
 }

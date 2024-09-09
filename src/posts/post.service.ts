@@ -40,4 +40,14 @@ export class PostService {
 
         return this.postRepository.updatePostStatus(post, status);
     }
+
+    async deletePost(id: number, user: User): Promise<PostEntity> {
+        const post = await this.getPostById(id);
+
+        if (post.user.id !== user.id) {
+            throw new UnauthorizedException('You can only delete your own posts');
+        }
+        
+        return this.postRepository.deletePost(post);
+    }
 }
