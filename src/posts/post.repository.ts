@@ -38,10 +38,7 @@ export class PostRepository extends Repository<PostEntity> {
 
     async getPostById(id: number): Promise<PostEntity> {
         return this.findOne({
-            where: [
-                { id, deletedAt: null, status: PostStatus.PUBLIC },
-            ],
-            relations: ['user']
+            where: { id, deletedAt: null }, relations: ['user']
         });
     }
 

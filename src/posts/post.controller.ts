@@ -24,7 +24,7 @@ export class PostController {
     // }
 
     @Get()
-    @UseGuards(CustomAuthGuard)
+    @UseGuards(CustomAuthGuard) // 인증/미인증 유저 모두 조회 가능
     getAllPosts(
         @Request() req
     ): Promise<PostEntity[]> {
@@ -36,19 +36,14 @@ export class PostController {
         return this.postService.getAllPosts(userId);
     }
 
-    // @Get('/:id')
-    // getPostById(
-    //     @Param('id', ParseIntPipe) id: number,
-    //     @Request() req
-    // ): Promise<PostEntity> {
-    //     const userId:number = req.user.id;
-    //     return this.postService.getPostById(id, userId);
-    // }
     @Get('/:id')
+    @UseGuards(AuthGuard())
     getPostById(
-        @Param('id',ParseIntPipe) id: number
+        @Param('id',ParseIntPipe) id: number,
+        @Request() req
     ): Promise<PostEntity> {
-        return this.postService.getPostById(id);
+        const user: User = req.user;
+        return this.postService.getPostById(id, user);
     }
 
     @Post()

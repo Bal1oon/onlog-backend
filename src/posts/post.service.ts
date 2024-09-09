@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PostEntity } from './post.entity';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -24,11 +24,15 @@ export class PostService {
 
     //     return found;
     // }
-    async getPostById(id: number): Promise<PostEntity> {
+    async getPostById(id: number, user: User): Promise<PostEntity> {
         const found = await this.postRepository.getPostById(id);
 
         if (!found) {
             throw new NotFoundException(`Post with ID ${ id } not found`);
+        } else {
+            if (found.status === PostStatus.PRIVATE && found.user.id !== user.id) {
+                throw new ForbiddenException(`You do not have permission to view this post`);
+            }
         }
 
         return found;
@@ -41,7 +45,7 @@ export class PostService {
 
     // 게시물 상태 변경
     async updatePostStatus(id: number, status: PostStatus, user:User): Promise<PostEntity> {
-        const post = await this.getPostById(id);
+        const post = await this.getPostById(id, user);
 
         await this.checkMyPost(post, user);
 
@@ -49,7 +53,7 @@ export class PostService {
     }
 
     async deletePost(id: number, user: User): Promise<PostEntity> {
-        const post = await this.getPostById(id);
+        const post = await this.getPostById(id, user);
 
         await this.checkMyPost(post, user);
 

@@ -12,14 +12,14 @@ export class CommentsService {
         private readonly postService: PostService
     ) {}
 
-    async getAllCommentsByPostId(postId: number): Promise<CommentEntity[]> {
-        await this.postService.getPostById(postId);
+    async getAllCommentsByPostId(postId: number, user: User): Promise<CommentEntity[]> {
+        await this.postService.getPostById(postId, user);
 
         return this.commentRepository.getAllCommentsByPostId(postId);
     }
 
     async createComment(createCommentDto: CreateCommentDto, user: User): Promise<CommentEntity> {
-        const post = await this.postService.getPostById(createCommentDto.postId);
+        const post = await this.postService.getPostById(createCommentDto.postId, user);
 
         let parentComment: CommentEntity | undefined;
         if (createCommentDto.parentCommentId) {

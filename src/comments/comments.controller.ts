@@ -12,8 +12,12 @@ export class CommentsController {
     constructor(private commentService: CommentsService) {}
 
     @Get('/:postId/comments')
-    getAllCommentsByPostId(@Param('postId', ParseIntPipe) postId: number): Promise<CommentEntity[]> {
-        return this.commentService.getAllCommentsByPostId(postId);
+    getAllCommentsByPostId(
+        @Param('postId', ParseIntPipe) postId: number,
+        @Request() req
+    ): Promise<CommentEntity[]> {
+        const user: User = req.user;
+        return this.commentService.getAllCommentsByPostId(postId, user);
     };
 
     @Post('/:postId/comments')
