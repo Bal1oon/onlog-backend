@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PostStatus } from "./post-status.enum";
 import { User } from "src/users/user.entity";
 import { CommentEntity } from "src/comments/comment.entity";
@@ -28,6 +28,6 @@ export class PostEntity extends BaseEntity {
     @JoinTable()
     likedBy: User[];
 
-    @Column({ nullable: true })
+    @DeleteDateColumn({ nullable: true })
     deletedAt: Date | null;
 }

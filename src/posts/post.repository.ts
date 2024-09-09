@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, IsNull, Repository } from "typeorm";
 import { PostEntity } from "./post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostStatus } from "./post-status.enum";
@@ -46,8 +46,7 @@ export class PostRepository extends Repository<PostEntity> {
     }
 
     async deletePost(post: PostEntity): Promise<PostEntity> {
-        post.deletedAt = new Date();
-        await this.save(post)
+        await post.softRemove();
 
         return post;
     }

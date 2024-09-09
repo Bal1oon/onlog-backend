@@ -15,8 +15,8 @@ export class PostService {
     }
 
     // 특정 게시물 가져오기
-    getPostById(id: number): Promise<PostEntity> {
-        const found = this.postRepository.getPostById(id);
+    async getPostById(id: number): Promise<PostEntity> {
+        const found = await this.postRepository.getPostById(id);
 
         if (!found) {
             throw new NotFoundException(`Post with ID ${ id } not found`);
@@ -47,7 +47,7 @@ export class PostService {
         if (post.user.id !== user.id) {
             throw new UnauthorizedException('You can only delete your own posts');
         }
-        
+
         return this.postRepository.deletePost(post);
     }
 }
