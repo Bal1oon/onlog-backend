@@ -34,9 +34,7 @@ export class PostService {
     async updatePostStatus(id: number, status: PostStatus, user:User): Promise<PostEntity> {
         const post = await this.getPostById(id);
 
-        if (post.user.id !== user.id) {
-            throw new UnauthorizedException('You can only update your own posts');
-        }
+        await this.checkMyPost(post, user);
 
         return this.postRepository.updatePostStatus(post, status);
     }
@@ -44,10 +42,14 @@ export class PostService {
     async deletePost(id: number, user: User): Promise<PostEntity> {
         const post = await this.getPostById(id);
 
-        if (post.user.id !== user.id) {
-            throw new UnauthorizedException('You can only delete your own posts');
-        }
+        await this.checkMyPost(post, user);
 
         return this.postRepository.deletePost(post);
+    }
+
+    async checkMyPost(post: PostEntity, user:User): Promise<void> {
+        if (post.user.id !== user.id) {
+            throw new UnauthorizedException('You can only manage your own posts');
+        }
     }
 }
