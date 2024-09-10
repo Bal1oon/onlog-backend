@@ -19,7 +19,7 @@ export class CommentRepository extends Repository<CommentEntity> {
     }
 
     async getCommentById(id: number): Promise<CommentEntity> {
-        return this.findOne({ where: { id } });
+        return this.findOne({ where: { id }, relations: ['parentComment'] });
     }
 
     async createComment(createCommentDto: CreateCommentDto, user: User, post: PostEntity, parentComment?: CommentEntity): Promise<CommentEntity> {

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CommentRepository } from './comment.repository';
 import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -26,6 +26,10 @@ export class CommentsService {
             parentComment = await this.commentRepository.getCommentById(createCommentDto.parentCommentId);
             if (!parentComment) {
                 throw new NotFoundException('Parent comment not found');
+            } else {
+                if (parentComment.parentComment) {
+                    throw new BadRequestException('Replies can only be created for top-level comments');
+                }
             }
         }
 
