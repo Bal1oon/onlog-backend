@@ -1,6 +1,6 @@
 import { PostEntity } from "src/posts/post.entity";
 import { User } from "src/users/user.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class CommentEntity extends BaseEntity {
@@ -29,4 +29,7 @@ export class CommentEntity extends BaseEntity {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @DeleteDateColumn({ nullable: true })
+    deletedAt: Date | null;
 }

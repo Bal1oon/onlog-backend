@@ -19,7 +19,7 @@ export class CommentRepository extends Repository<CommentEntity> {
     }
 
     async getCommentById(id: number): Promise<CommentEntity> {
-        return this.findOne({ where: { id }, relations: ['parentComment'] });
+        return this.findOne({ where: { id }, relations: ['parentComment', 'user'] });
     }
 
     async createComment(createCommentDto: CreateCommentDto, user: User, post: PostEntity, parentComment?: CommentEntity): Promise<CommentEntity> {
@@ -33,6 +33,12 @@ export class CommentRepository extends Repository<CommentEntity> {
         })
 
         await this.save(comment);
+
+        return comment;
+    }
+
+    async deleteComment(comment: CommentEntity): Promise<CommentEntity> {
+        await comment.softRemove();
 
         return comment;
     }

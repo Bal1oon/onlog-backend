@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -44,5 +44,16 @@ export class CommentsController {
         createCommentDto.parentCommentId = parentCommentId;
         this.logger.verbose(`User ${ user.username } creating a reply on comment ${ parentCommentId }`);
         return this.commentService.createComment(createCommentDto, user, postId);
+    }
+
+    @Patch('/:postId/comments/:id')
+    deleteComment(
+        @Param('postId', ParseIntPipe) postId: number,
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req
+    ): Promise<CommentEntity> {
+        const user: User = req.user;
+        this.logger.verbose(`User ${user.username} deleting comment ${id}`);
+        return this.commentService.deleteComment(id, user);
     }
 }
