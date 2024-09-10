@@ -5,10 +5,6 @@ export class CreateCommentDto {
     @IsNotEmpty({ message: 'Comment should not be empty' })
     content: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    postId: number;
-
     @IsOptional()
     @IsNumber()
     parentCommentId?: number;

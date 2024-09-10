@@ -18,8 +18,8 @@ export class CommentsService {
         return this.commentRepository.getAllCommentsByPostId(postId);
     }
 
-    async createComment(createCommentDto: CreateCommentDto, user: User): Promise<CommentEntity> {
-        const post = await this.postService.getPostById(createCommentDto.postId, user);
+    async createComment(createCommentDto: CreateCommentDto, user: User, postId: number): Promise<CommentEntity> {
+        const post = await this.postService.getPostById(postId, user);
 
         let parentComment: CommentEntity | undefined;
         if (createCommentDto.parentCommentId) {
