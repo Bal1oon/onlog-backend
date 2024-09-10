@@ -75,7 +75,7 @@ export class PostController {
     deletePost(
         @Param('id', ParseIntPipe) id: number,
         @Request() req
-    ) {
+    ): Promise<PostEntity> {
         const user: User = req.user;
         this.logger.verbose(`User ${user.username} deleting post ${id}`);
         return this.postService.deletePost(id, user);
