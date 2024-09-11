@@ -80,4 +80,15 @@ export class PostController {
         this.logger.verbose(`User ${user.username} deleting post ${id}`);
         return this.postService.deletePost(id, user);
     }
+
+    @Patch('/:id/likes')
+    @UseGuards(AuthGuard())
+    likePost(
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req
+    ): Promise<PostEntity> {
+        const user: User = req.user;
+        this.logger.log(`User with ID ${ user.id} like the post ${ id }`);
+        return this.postService.likePostToggle(id, user);
+    }
 }

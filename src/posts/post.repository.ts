@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { DataSource, IsNull, Repository } from "typeorm";
+import { Injectable, Logger } from "@nestjs/common";
+import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostStatus } from "./post-status.enum";
@@ -7,6 +7,7 @@ import { User } from "src/users/user.entity";
 
 @Injectable()
 export class PostRepository extends Repository<PostEntity> {
+    private logger = new Logger('PostRepository');
     constructor(private dataSource: DataSource) {
         super(PostEntity, dataSource.createEntityManager());
     }
@@ -38,7 +39,7 @@ export class PostRepository extends Repository<PostEntity> {
 
     async getPostById(id: number): Promise<PostEntity> {
         return this.findOne({
-            where: { id, deletedAt: null }, relations: ['user']
+            where: { id, deletedAt: null }, relations: ['user', 'likedBy']
         });
     }
 
@@ -68,6 +69,24 @@ export class PostRepository extends Repository<PostEntity> {
 
     async deletePost(post: PostEntity): Promise<PostEntity> {
         await post.softRemove();
+
+        return post;
+    }
+
+    async likePostToggle(post: PostEntity, user: User): Promise<PostEntity> {
+        const index = post.likedBy.findIndex(likedUser => likedUser.id === user.id);
+
+        if (index === -1) {
+            post.likedBy.push(user);
+            this.logger.verbose(`User ${ user.id } likes post ${ post.id }`);
+        } else {
+            post.likedBy.splice(index, 1);
+            this.logger.verbose(`User ${ user.id } unlikes post ${ post.id }`);
+        }
+
+        post.likes = post.likedBy.length;
+
+        await this.save(post);
 
         return post;
     }

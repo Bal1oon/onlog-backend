@@ -65,4 +65,9 @@ export class PostService {
             throw new UnauthorizedException('You can only manage your own posts');
         }
     }
+
+    async likePostToggle(id:number, user: User): Promise<PostEntity> {
+        const found = await this.getPostById(id, user);
+        return this.postRepository.likePostToggle(found, user);
+    }
 }
