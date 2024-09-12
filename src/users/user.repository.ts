@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User> {
     }
 
     async getUserByUsername(username: string): Promise<User> {
-        const found = await this.findOne({ where: { username } });
+        const found = await this.findOne({ where: { username }, relations: ['followed', 'following'] });
         
         if (!found) {
             throw new NotFoundException(`Can't find User with id ${ username }`);
@@ -32,7 +32,7 @@ export class UserRepository extends Repository<User> {
     }
 
     async getUserById(id: number): Promise<User> {
-        const found = await this.findOne({ where: { id } });
+        const found = await this.findOne({ where: { id }, relations: ['followed', 'following'] });
         
         if (!found) {
             throw new NotFoundException(`Can't find User with id ${ id }`);
@@ -83,5 +83,18 @@ export class UserRepository extends Repository<User> {
 
         await this.save(user);
         return user;
+    }
+
+    async followUser(userToFollow: User, currentUser: User): Promise<User> {
+        currentUser.following.push(userToFollow);
+        await this.save(currentUser);
+        return currentUser;
+    }
+
+    async unfollowUser(userToUnfollow: User, currentUser: User): Promise<User> {
+        currentUser.following = currentUser.following.filter(followingUser => followingUser.id !== userToUnfollow.id);
+        await this.save(currentUser);
+
+        return currentUser;
     }
 }

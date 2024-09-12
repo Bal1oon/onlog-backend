@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,5 +19,35 @@ export class UsersService {
         }
 
         return this.userRepository.updateUser(updateUserDto, found);
+    }
+
+    async followUser(id: number, user: User): Promise<User> {
+        const currentUser = await this.userRepository.getUserById(user.id);
+        const userToFollow = await this.userRepository.getUserById(id);
+
+        if (currentUser.id === userToFollow.id) {
+            throw new BadRequestException('Not allowed to follow yourself');
+        }
+
+        if (currentUser.following.some(followingUser => followingUser.id === userToFollow.id)) {
+            throw new BadRequestException('You are already following this user');
+        }
+
+        return this.userRepository.followUser(userToFollow, currentUser);
+    }
+
+    async unfollowUser(id: number, user: User): Promise<User> {
+        const currentUser = await this.userRepository.getUserById(user.id);
+        const userToUnfollow = await this.userRepository.getUserById(id);
+
+        if (currentUser.id === userToUnfollow.id) {
+            throw new BadRequestException('Not allowed to unfollow yourself');
+        }
+
+        if (!currentUser.following.some(follwingUser => follwingUser.id === userToUnfollow.id)) {
+            throw new BadRequestException('You are not following this user');
+        }
+
+        return this.userRepository.unfollowUser(userToUnfollow, currentUser);
     }
 }

@@ -34,6 +34,15 @@ export class User extends BaseEntity {
     @JoinTable()
     likedPosts: PostEntity[]
 
+    // 사용자를 팔로우하는 사용자
+    @ManyToMany(type => User, user => user.following)
+    @JoinTable()
+    followed: User[]
+
+    // 사용자가 팔로우하는 사용자
+    @ManyToMany(type => User, user => user.followed)
+    following: User[]
+
     @CreateDateColumn()
     createdAt: Date;
 

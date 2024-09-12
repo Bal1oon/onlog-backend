@@ -24,4 +24,24 @@ export class UsersController {
         const user: User = req.user;
         return this.userService.updateUser(id, updateUserDto, user);
     }
+
+    @Patch('/:id/follow')
+    @UseGuards(AuthGuard())
+    followUser(
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req
+    ): Promise<User> {
+        const user: User = req.user;
+        return this.userService.followUser(id, user);
+    }
+
+    @Patch('/:id/unfollow')
+    @UseGuards(AuthGuard())
+    unfollowUser(
+        @Param('id', ParseIntPipe) id: number,
+        @Request() req
+    ): Promise<User> {
+        const user: User = req.user;
+        return this.userService.unfollowUser(id, user);
+    }
 }
