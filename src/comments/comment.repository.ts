@@ -14,7 +14,26 @@ export class CommentRepository extends Repository<CommentEntity> {
     async getAllCommentsByPostId(postId: number): Promise<CommentEntity[]> {
         return this.find({ 
             where: { post: { id: postId }, parentComment: IsNull() },
-            relations: ['replies', 'user']
+            relations: ['replies', 'user', 'replies.user'],
+            select: {
+                user: {
+                    id: true,
+                    email: true,
+                    username: true
+                },
+                replies: {
+                    id: true,
+                    content: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    deletedAt: true,
+                    user: {
+                        id: true,
+                        email: true,
+                        username: true
+                    }
+                }
+            }
         });
     }
 

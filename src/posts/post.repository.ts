@@ -19,7 +19,15 @@ export class PostRepository extends Repository<PostEntity> {
                 where: [
                     { deletedAt: null, status: PostStatus.PUBLIC },
                     { deletedAt: null, status: PostStatus.PRIVATE, user: { id: userId } }
-                ]
+                ],
+                relations: ['user'],
+                select: {
+                    user: {
+                        id: true,
+                        email: true,
+                        username: true
+                    }
+                }
             });
         } else {
             return this.find({ where: { deletedAt: null, status: PostStatus.PUBLIC } });
@@ -39,7 +47,20 @@ export class PostRepository extends Repository<PostEntity> {
 
     async getPostById(id: number): Promise<PostEntity> {
         return this.findOne({
-            where: { id, deletedAt: null }, relations: ['user', 'likedBy']
+            where: { id, deletedAt: null }, 
+            relations: ['user', 'likedBy'],
+            select: {
+                user: {
+                    id: true,
+                    email: true,
+                    username: true
+                },
+                likedBy: {
+                    id: true,
+                    email: true,
+                    username: true
+                }
+            }
         });
     }
 

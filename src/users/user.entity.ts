@@ -24,13 +24,13 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     profileImage: string;
 
-    @OneToMany(type => PostEntity, posts => posts.user, { eager: true })
+    @OneToMany(type => PostEntity, posts => posts.user, { eager: false })
     posts: PostEntity[]
 
-    @OneToMany(type => CommentEntity, comments => comments.user, { eager: true })
+    @OneToMany(type => CommentEntity, comments => comments.user, { eager: false })
     comments: CommentEntity[]
 
-    @ManyToMany(type => PostEntity, post => post.likedBy, { eager: true })
+    @ManyToMany(type => PostEntity, post => post.likedBy, { eager: false })
     @JoinTable()
     likedPosts: PostEntity[]
 
