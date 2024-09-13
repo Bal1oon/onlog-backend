@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { User } from "./user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -36,6 +36,16 @@ export class UserRepository extends Repository<User> {
         
         if (!found) {
             throw new NotFoundException(`Can't find User with id ${ id }`);
+        }
+
+        return found;
+    }
+
+    async getUserByRefreshToken(refreshToken: string): Promise<User> {
+        const found = await this.findOne({ where: { refreshToken } });
+
+        if (!found) {
+            throw new UnauthorizedException('Invalid refresh token');
         }
 
         return found;
@@ -96,5 +106,11 @@ export class UserRepository extends Repository<User> {
         await this.save(currentUser);
 
         return currentUser;
+    }
+
+    async saveRefreshToken(userId: number, refreshToken: string): Promise<void> {
+        const user = await this.getUserById(userId);
+        user.refreshToken = refreshToken;
+        await this.save(user);
     }
 }

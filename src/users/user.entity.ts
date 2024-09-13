@@ -43,6 +43,9 @@ export class User extends BaseEntity {
     @ManyToMany(type => User, user => user.followed)
     following: User[]
 
+    @Column({ nullable: true })
+    refreshToken?: string;
+
     @CreateDateColumn()
     createdAt: Date;
 
