@@ -6,6 +6,7 @@ import { AuthCredentialDto } from './dto/auth-credential.dto';
 import * as bcrypt from 'bcryptjs';
 import { v1 as uuid } from 'uuid';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { addDays } from 'date-fns';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +40,8 @@ export class AuthService {
             let refreshToken = user.refreshToken;
             if (!refreshToken) {
                 refreshToken = uuid();
-                await this.userRepository.saveRefreshToken(user.id, refreshToken);
+                const refreshTokenExpiresAt = addDays(new Date(), 14);
+                await this.userRepository.saveRefreshToken(user.id, refreshToken, refreshTokenExpiresAt);
             }
 
             return { accessToken, refreshToken };
@@ -48,10 +50,14 @@ export class AuthService {
         }
     }
 
-    async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string }> {
+    async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string, refreshToken: string }> {
         const { refreshToken } = refreshTokenDto;
-
         const user = await this.userRepository.getUserByRefreshToken(refreshToken);
+
+        if (user.refreshTokenExpiresAt < new Date()) {
+            throw new UnauthorizedException('Refresh token expired');
+        }
+
         const payload = {
             id: user.id,
             email: user.email,
@@ -59,6 +65,11 @@ export class AuthService {
         };
 
         const accessToken = await this.jwtService.sign(payload);
-        return { accessToken };
+        const newRefreshToken = uuid();
+        const newRefreshTokenExpiresAt = addDays(new Date(), 14);
+
+        await this.userRepository.saveRefreshToken(user.id, newRefreshToken, newRefreshTokenExpiresAt);
+
+        return { accessToken, refreshToken: newRefreshToken };
     }
 }

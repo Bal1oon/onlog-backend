@@ -108,9 +108,10 @@ export class UserRepository extends Repository<User> {
         return currentUser;
     }
 
-    async saveRefreshToken(userId: number, refreshToken: string): Promise<void> {
+    async saveRefreshToken(userId: number, refreshToken: string, expiresAt: Date): Promise<void> {
         const user = await this.getUserById(userId);
         user.refreshToken = refreshToken;
+        user.refreshTokenExpiresAt = expiresAt;
         await this.save(user);
     }
 }

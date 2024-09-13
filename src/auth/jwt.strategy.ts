@@ -18,12 +18,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         })
     }
 
-    async validate(payload) {
-        const { email, username } = payload;
-        const user: User = await this.userRepository.getUserByUsername(username);
+    async validate(payload: any) {
+        const { id, email, username } = payload;
 
-        if (!user || user.email !== email) {
-            throw new UnauthorizedException();
+        const user: User = await this.userRepository.getUserById(id);
+
+        if (!user || user.username !== username || user.email !== email) {
+            throw new UnauthorizedException('Invalid credentials');
         }
 
         return user;

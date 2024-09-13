@@ -46,6 +46,9 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     refreshToken?: string;
 
+    @Column({ type: 'timestamp', nullable: true})
+    refreshTokenExpiresAt?: Date;
+
     @CreateDateColumn()
     createdAt: Date;
 

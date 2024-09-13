@@ -23,7 +23,7 @@ export class AuthController {
 
     @Post('/refresh')
     @UsePipes(ValidationPipe)
-    refreshToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string }> {
+    refreshToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string, refreshToken: string }> {
         return this.authService.refreshToken(refreshTokenDto);
     }
 }
