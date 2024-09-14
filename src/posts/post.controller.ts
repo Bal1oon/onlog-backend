@@ -6,7 +6,7 @@ import { PostStatusValidationPipe } from './pipes/post-status-validation.pipe';
 import { PostStatus } from './post-status.enum';
 import { User } from 'src/users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { CustomAuthGuard } from '../guards/custom-auth.guard';
+import { PostAuthGuard } from './guards/post-auth.guard';
 
 @Controller('posts')
 export class PostController {
@@ -24,7 +24,7 @@ export class PostController {
     // }
 
     @Get()
-    @UseGuards(CustomAuthGuard) // 인증/미인증 유저 모두 조회 가능
+    @UseGuards(PostAuthGuard) // 인증/미인증 유저 모두 조회 가능
     getAllPosts(
         @Request() req
     ): Promise<PostEntity[]> {

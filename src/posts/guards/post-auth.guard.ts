@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import * as config from 'config';
 
 @Injectable()
-export class CustomAuthGuard implements CanActivate {
+export class PostAuthGuard implements CanActivate {
     private logger = new Logger('CustomAuthGuard');
     canActivate(
         context: ExecutionContext,
