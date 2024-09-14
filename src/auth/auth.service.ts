@@ -7,6 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { v1 as uuid } from 'uuid';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { addDays } from 'date-fns';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -26,14 +27,18 @@ export class AuthService {
         return this.userRepository.createUser(authCredentialDto);
     }
 
-    async logIn(authCredentialDto: AuthCredentialDto): Promise<{ accessToken: string, refreshToken: string }> {
+    async validateUser(authCredentialDto: AuthCredentialDto): Promise<User> {
         const { email, password } = authCredentialDto;
         const user = await this.userRepository.getUserByEmail(email);
 
-        if (user && (await bcrypt.compare(password, user.password))) {
+        if (user && (await bcrypt.compare(password, user.password))) { return user; }
+        else { return null; }
+    }
+
+    async logIn(user: User): Promise<{ accessToken: string, refreshToken: string }> {
             const payload = {
                 id: user.id,
-                email,
+                email: user.email,
                 username: user.username
             };
             const accessToken = await this.jwtService.sign(payload);
@@ -45,9 +50,6 @@ export class AuthService {
             }
 
             return { accessToken, refreshToken };
-        } else {
-            throw new UnauthorizedException('Login failed');
-        }
     }
 
     async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string, refreshToken: string }> {

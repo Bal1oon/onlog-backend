@@ -1,7 +1,8 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +18,9 @@ export class AuthController {
 
     @Post('/login')
     @UsePipes(ValidationPipe)
-    login(@Body() authCredentialDto: AuthCredentialDto): Promise<{ accessToken: string, refreshToken: string }> {
-        return this.authService.logIn(authCredentialDto);
+    @UseGuards(AuthGuard('local'))
+    login(@Req() req): Promise<{ accessToken: string, refreshToken: string }> {
+        return this.authService.logIn(req.user);
     }
 
     @Post('/refresh')
