@@ -7,6 +7,7 @@ import { PostStatus } from './post-status.enum';
 import { User } from 'src/users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { PostAuthGuard } from './guards/post-auth.guard';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Controller('posts')
 export class PostController {
@@ -90,5 +91,18 @@ export class PostController {
         const user: User = req.user;
         this.logger.log(`User with ID ${ user.id} like the post ${ id }`);
         return this.postService.likePostToggle(id, user);
+    }
+
+    @Patch('/:id/update')
+    @UseGuards(AuthGuard())
+    @UsePipes(ValidationPipe)
+    updatePost(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updatePostDto: UpdatePostDto,
+        @Request() req
+    ): Promise<PostEntity> {
+        const user: User = req.user;
+        this.logger.verbose(`User with ID ${ user.id } update the post ${ id }`);
+        return this.postService.updatePost(id, updatePostDto, user);
     }
 }

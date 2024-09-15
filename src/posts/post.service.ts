@@ -4,6 +4,7 @@ import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostStatus } from './post-status.enum';
 import { User } from 'src/users/user.entity';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostService {
@@ -69,5 +70,11 @@ export class PostService {
     async likePostToggle(id:number, user: User): Promise<PostEntity> {
         const found = await this.getPostById(id, user);
         return this.postRepository.likePostToggle(found, user);
+    }
+
+    async updatePost(id: number, updatePostDto: UpdatePostDto, user: User): Promise<PostEntity> {
+        const post = await this.getPostById(id, user);
+        await this.isOwnPost(post, user);
+        return this.postRepository.updatePost(post, updatePostDto);
     }
 }

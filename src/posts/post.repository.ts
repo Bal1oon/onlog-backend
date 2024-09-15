@@ -1,9 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostStatus } from "./post-status.enum";
 import { User } from "src/users/user.entity";
+import { UpdatePostDto } from "./dto/update-post.dto";
 
 @Injectable()
 export class PostRepository extends Repository<PostEntity> {
@@ -106,6 +107,21 @@ export class PostRepository extends Repository<PostEntity> {
         }
 
         post.likes = post.likedBy.length;
+
+        await this.save(post);
+
+        return post;
+    }
+
+    async updatePost(post: PostEntity, updatePostDto: UpdatePostDto): Promise<PostEntity> {
+        const { title, content } = updatePostDto;
+
+        if (!title && !content) {
+            throw new BadRequestException();
+        }
+
+        post.title = title;
+        post.content = content;
 
         await this.save(post);
 
