@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { LocalGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +18,7 @@ export class AuthController {
     }
 
     @Post('/login')
-    @UsePipes(ValidationPipe)
-    @UseGuards(AuthGuard('local'))
+    @UseGuards(LocalGuard)
     login(@Req() req): Promise<{ accessToken: string, refreshToken: string }> {
         return this.authService.logIn(req.user);
     }
