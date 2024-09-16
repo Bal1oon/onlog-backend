@@ -1,8 +1,6 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LocalGuard } from './guards/local.guard';
 
 @Controller('auth')
@@ -19,13 +17,36 @@ export class AuthController {
 
     @Post('/login')
     @UseGuards(LocalGuard)
-    login(@Req() req): Promise<{ accessToken: string, refreshToken: string }> {
-        return this.authService.logIn(req.user);
+    async login(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
+        const { accessToken, refreshToken } = await this.authService.logIn(req.user);
+
+        res.setHeader('Authorization', 'Bearer ' + [accessToken, refreshToken]);
+        res.cookie('accessToken', accessToken, {
+          httpOnly: true,
+        });
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+        });
+        return {
+          message: 'login success',
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        };
     }
 
     @Post('/refresh')
-    @UsePipes(ValidationPipe)
-    refreshToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<{ accessToken: string, refreshToken: string }> {
-        return this.authService.refreshToken(refreshTokenDto);
+    async refreshToken(@Req() req, @Res() res): Promise<{ accessToken: string }> {
+        const refreshTokenFromCookie = req.cookies.refreshToken;
+        if (!refreshTokenFromCookie) {
+            throw new UnauthorizedException('Refresh token not found');
+        }
+
+        const newAccessToken = await this.authService.refreshAccessToken(refreshTokenFromCookie);
+        res.setHeader('Authorization', 'Bearer ' + newAccessToken);
+        res.cookie('accessToken', newAccessToken, {
+            httpOnly: true,
+        });
+
+        return res.json(newAccessToken);
     }
 }
