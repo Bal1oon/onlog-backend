@@ -5,15 +5,17 @@ import * as config from 'config';
 
 @Injectable()
 export class PostAuthGuard implements CanActivate {
-    private logger = new Logger('CustomAuthGuard');
+    private logger = new Logger('PostAuthGuard');
     canActivate(
         context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
-        const authHeader = request.headers['authorization'];
+        // const authHeader = request.headers['authorization'];
+        const token = request.cookies['accessToken'];
 
-        if (authHeader) {
-            const token = authHeader.split(' ')[1];
+        // if (authHeader) {
+        //     const token = authHeader.split(' ')[1];
+        if (token) {
             try {
                 const user = jwt.verify(token, config.get('jwt.secret'));
                 request.user = user;
