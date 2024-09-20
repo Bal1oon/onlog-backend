@@ -86,4 +86,8 @@ export class AuthService {
     
         return { accessToken };
     }
+
+    async removeRefreshToken(userId: number): Promise<void> {
+        await this.userRepository.update(userId, {refreshToken: null, refreshTokenExpiresAt: null});
+    }
 }

@@ -1,10 +1,12 @@
-import { Body, Controller, Post, Req, Res, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Logger, Post, Req, Res, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { LocalGuard } from './guards/local.guard';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 @Controller('auth')
 export class AuthController {
+    private logger = new Logger('AuthController');
     constructor(
         private authService: AuthService
     ) {}
@@ -20,7 +22,7 @@ export class AuthController {
     async login(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
         const { accessToken, refreshToken } = await this.authService.logIn(req.user);
 
-        res.setHeader('Authorization', 'Bearer ' + [accessToken, refreshToken]);
+        res.setHeader('Authorization', 'Bearer ' + accessToken);
         res.cookie('accessToken', accessToken, {
           httpOnly: true,
         });
@@ -48,5 +50,18 @@ export class AuthController {
         });
 
         return res.json(newAccessToken);
+    }
+
+    @Post('/logout')
+    @UseGuards(JwtRefreshGuard)
+    async logout(@Req() req, @Res() res): Promise<void> {
+        const userId = req.user.id;
+        await this.authService.removeRefreshToken(userId);
+
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+
+        this.logger.log(`INFO: User ${ userId } has logged out successfully.`);
+        return res.json({ message: 'Logout successful' });
     }
 }
