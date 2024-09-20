@@ -4,6 +4,7 @@ import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from '../users/user.entity';
 import { PostService } from '../posts/post.service';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentsService {
@@ -55,5 +56,11 @@ export class CommentsService {
         if (comment.user.id !== user.id) {
             throw new UnauthorizedException('You can only manage your own comments');
         }
+    }
+
+    async updateComment(updateCommentDto: UpdateCommentDto, id: number, user: User): Promise<CommentEntity> {
+        const comment = await this.getCommentById(id);
+        await this.isOwnComment(comment, user);
+        return this.commentRepository.updateComment(updateCommentDto, comment);
     }
 }

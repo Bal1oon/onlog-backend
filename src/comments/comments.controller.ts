@@ -4,6 +4,7 @@ import { CommentEntity } from './comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from 'src/users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('posts')
 @UseGuards(AuthGuard())
@@ -55,5 +56,18 @@ export class CommentsController {
         const user: User = req.user;
         this.logger.verbose(`User ${user.username} deleting comment ${id}`);
         return this.commentService.deleteComment(id, user);
+    }
+
+    @Patch('/:postId/comments/:id/update')
+    @UsePipes(ValidationPipe)
+    updateComment(
+        @Param('postId', ParseIntPipe) postId: number,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateCommentDto: UpdateCommentDto,
+        @Request() req
+    ): Promise<CommentEntity> {
+        const user: User = req.user;
+        this.logger.verbose(`User ${ user.username } updating comment ${ id }`);
+        return this.commentService.updateComment(updateCommentDto, id, user);
     }
 }

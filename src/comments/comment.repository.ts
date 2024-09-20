@@ -4,6 +4,7 @@ import { CommentEntity } from "./comment.entity";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { User } from "src/users/user.entity";
 import { PostEntity } from "src/posts/post.entity";
+import { UpdateCommentDto } from "./dto/update-comment.dto";
 
 @Injectable()
 export class CommentRepository extends Repository<CommentEntity> {
@@ -59,6 +60,13 @@ export class CommentRepository extends Repository<CommentEntity> {
     async deleteComment(comment: CommentEntity): Promise<CommentEntity> {
         await comment.softRemove();
 
+        return comment;
+    }
+
+    async updateComment(updateCommentDto: UpdateCommentDto, comment: CommentEntity): Promise<CommentEntity> {
+        const { content } = updateCommentDto;
+        comment.content = content;
+        await this.save(comment);
         return comment;
     }
 }
