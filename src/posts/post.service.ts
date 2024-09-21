@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException, UnauthorizedExceptio
 import { PostEntity } from './post.entity';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
-import { PostStatus } from './post-status.enum';
+import { PostStatus } from './enums/post-status.enum';
 import { User } from 'src/users/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 

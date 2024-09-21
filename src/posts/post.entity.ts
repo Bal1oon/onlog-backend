@@ -1,7 +1,8 @@
 import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { PostStatus } from "./post-status.enum";
+import { PostStatus } from "./enums/post-status.enum";
 import { User } from "src/users/user.entity";
 import { CommentEntity } from "src/comments/comment.entity";
+import { PostTopic } from "./enums/post-topic.enum";
 
 @Entity()
 export class PostEntity extends BaseEntity {
@@ -17,6 +18,9 @@ export class PostEntity extends BaseEntity {
     // 공개/비공개
     @Column()
     status: PostStatus;
+
+    @Column({nullable: true})
+    topic: PostTopic;
 
     @OneToMany(type => CommentEntity, comments => comments.post)
     comments: CommentEntity[];

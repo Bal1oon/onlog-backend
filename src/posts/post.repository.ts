@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./post.entity";
 import { CreatePostDto } from "./dto/create-post.dto";
-import { PostStatus } from "./post-status.enum";
+import { PostStatus } from "./enums/post-status.enum";
 import { User } from "src/users/user.entity";
 import { UpdatePostDto } from "./dto/update-post.dto";
 
@@ -67,12 +67,13 @@ export class PostRepository extends Repository<PostEntity> {
 
     // 게시물 생성
     async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
-        const { title, content } = createPostDto;
+        const { title, content, topic } = createPostDto;
 
         const post = this.create({
             title,
             content,
             status: PostStatus.PUBLIC,
+            topic,
             user
         })
 

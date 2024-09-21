@@ -3,7 +3,7 @@ import { PostService } from './post.service';
 import { PostEntity } from './post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostStatusValidationPipe } from './pipes/post-status-validation.pipe';
-import { PostStatus } from './post-status.enum';
+import { PostStatus } from './enums/post-status.enum';
 import { User } from 'src/users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { PostAuthGuard } from './guards/post-auth.guard';

@@ -1,5 +1,5 @@
 import { ArgumentMetadata, BadRequestException, PipeTransform } from "@nestjs/common";
-import { PostStatus } from "../post-status.enum";
+import { PostStatus } from "../enums/post-status.enum";
 
 export class PostStatusValidationPipe implements PipeTransform {
     readonly StatusOptions = [
