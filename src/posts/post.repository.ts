@@ -115,14 +115,11 @@ export class PostRepository extends Repository<PostEntity> {
     }
 
     async updatePost(post: PostEntity, updatePostDto: UpdatePostDto): Promise<PostEntity> {
-        const { title, content } = updatePostDto;
+        const { title, content, topic } = updatePostDto;
 
-        if (!title && !content) {
-            throw new BadRequestException();
-        }
-
-        post.title = title;
-        post.content = content;
+        post.title = title ?? post.title;
+        post.content = content ?? post.content;
+        post.topic = topic ?? post.topic;
 
         await this.save(post);
 
