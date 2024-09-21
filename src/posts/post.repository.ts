@@ -67,12 +67,12 @@ export class PostRepository extends Repository<PostEntity> {
 
     // 게시물 생성
     async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
-        const { title, content, topic } = createPostDto;
+        const { title, content, topic, status } = createPostDto;
 
         const post = this.create({
             title,
             content,
-            status: PostStatus.PUBLIC,
+            status: status ?? PostStatus.PUBLIC,
             topic,
             user
         })

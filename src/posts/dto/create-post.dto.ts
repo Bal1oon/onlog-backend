@@ -1,5 +1,6 @@
-import { IsEnum, IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 import { PostTopic } from "../enums/post-topic.enum";
+import { PostStatus } from "../enums/post-status.enum";
 
 export class CreatePostDto {
     @IsNotEmpty()
@@ -7,6 +8,10 @@ export class CreatePostDto {
 
     @IsNotEmpty()
     content: string;
+
+    @IsEnum(PostStatus)
+    @IsOptional()
+    status: PostStatus;
 
     @IsEnum(PostTopic)
     topic: PostTopic;
