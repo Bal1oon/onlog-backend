@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseIntPipe, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CategoryService } from './categories.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -18,5 +18,19 @@ export class CategoryController {
     ): Promise<Category> {
         const user: User = req.user;
         return this.categoryService.createCategory(createCategoryDto, user);
+    }
+
+    @Delete('/:id')
+    async deleteCategory(
+        @Param('id', ParseIntPipe) id: number,
+        @Req() req,
+        @Res() res
+    ): Promise<void> {
+        await this.categoryService.deleteCategory(id, req.user);
+        return res.json({
+            message: "Success",
+            description: `Category id ${ id } deleted`,
+            status: 200
+        })
     }
 }
