@@ -1,7 +1,7 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryRepository } from './category.repository';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import { CategoryRequestDto } from './dto/category-request.dto';
 import { Category } from './category.entity';
 import { User } from 'src/users/user.entity';
 
@@ -12,8 +12,8 @@ export class CategoryService {
         private readonly categoryRepository: CategoryRepository,
     ) {}
 
-    async createCategory(createCategoryDto: CreateCategoryDto, user: User): Promise<Category> {
-        const { name } = createCategoryDto;
+    async createCategory(categoryRequestDto: CategoryRequestDto, user: User): Promise<Category> {
+        const { name } = categoryRequestDto;
 
         const existingCategory = await this.categoryRepository.findOne({
             where: { 
@@ -54,5 +54,22 @@ export class CategoryService {
         if (postCount > 0) {
             throw new BadRequestException('You must have no posts in the category to delete it');
         }
+    }
+
+    async updateCategory(id: number, categoryRequestDto: CategoryRequestDto, user: User): Promise<Category> {
+        const category = await this.categoryRepository.getCategoryWithPost(id);
+        if (!category) {
+            throw new NotFoundException('Category not found');
+        }
+
+        if (!this.isOwn(category.user.id, user.id)) {
+            throw new BadRequestException('You can only manage your own');
+        }
+
+        const { name } = categoryRequestDto;
+        category.name = name;
+        await this.categoryRepository.save(category);
+
+        return category;
     }
 }
