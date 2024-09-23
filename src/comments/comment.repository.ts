@@ -34,6 +34,9 @@ export class CommentRepository extends Repository<CommentEntity> {
                         username: true
                     }
                 }
+            },
+            order: {
+                createdAt: 'DESC'
             }
         });
     }

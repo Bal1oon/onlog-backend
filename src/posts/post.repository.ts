@@ -28,10 +28,16 @@ export class PostRepository extends Repository<PostEntity> {
                         email: true,
                         username: true
                     }
+                },
+                order: {
+                    createdAt: 'DESC'
                 }
             });
         } else {
-            return this.find({ where: { deletedAt: null, status: PostStatus.PUBLIC } });
+            return this.find({ 
+                where: { deletedAt: null, status: PostStatus.PUBLIC },
+                order: { createdAt: 'DESC' }
+            });
         }
     }
 
