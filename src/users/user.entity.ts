@@ -1,3 +1,4 @@
+import { Category } from "src/categories/category.entity";
 import { CommentEntity } from "src/comments/comment.entity";
 import { PostEntity } from "src/posts/post.entity";
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
@@ -23,6 +24,9 @@ export class User extends BaseEntity {
 
     @Column({ nullable: true })
     profileImage: string;
+
+    @OneToMany(type => Category, categories => categories.user)
+    categories: Category[]
 
     @OneToMany(type => PostEntity, posts => posts.user, { eager: false })
     posts: PostEntity[]

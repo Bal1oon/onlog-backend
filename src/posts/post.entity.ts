@@ -3,6 +3,7 @@ import { PostStatus } from "./enums/post-status.enum";
 import { User } from "src/users/user.entity";
 import { CommentEntity } from "src/comments/comment.entity";
 import { PostTopic } from "./enums/post-topic.enum";
+import { Category } from "src/categories/category.entity";
 
 @Entity()
 export class PostEntity extends BaseEntity {
@@ -19,8 +20,11 @@ export class PostEntity extends BaseEntity {
     @Column()
     status: PostStatus;
 
-    @Column({nullable: true})
+    @Column({nullable: true})   // 구현 후 null 제거
     topic: PostTopic;
+
+    @ManyToOne(type => Category, category => category.posts)
+    category: Category
 
     @OneToMany(type => CommentEntity, comments => comments.post)
     comments: CommentEntity[];

@@ -5,6 +5,7 @@ import { typeORMConfig } from './configs/typeorm.config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CommentsModule } from './comments/comments.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CommentsModule } from './comments/comments.module';
     UsersModule,
     AuthModule,
     CommentsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}
