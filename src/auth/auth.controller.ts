@@ -43,13 +43,16 @@ export class AuthController {
             throw new UnauthorizedException('Refresh token not found');
         }
 
-        const newAccessToken = await this.authService.refreshAccessToken(refreshTokenFromCookie);
+        const { accessToken: newAccessToken } = await this.authService.refreshAccessToken(refreshTokenFromCookie);
         res.setHeader('Authorization', 'Bearer ' + newAccessToken);
         res.cookie('accessToken', newAccessToken, {
             httpOnly: true,
         });
 
-        return res.json(newAccessToken);
+        return res.json({
+            message: 'Issued access token successfully',
+            accessToken: newAccessToken
+          });
     }
 
     @Post('/logout')
