@@ -15,7 +15,12 @@ export class CategoryService {
     async createCategory(createCategoryDto: CreateCategoryDto, user: User): Promise<Category> {
         const { name } = createCategoryDto;
 
-        const existingCategory = await this.categoryRepository.findOne({ where: { name, user: { id: user.id } } });
+        const existingCategory = await this.categoryRepository.findOne({
+            where: { 
+                name: name.trim().toUpperCase(), 
+                user: { id: user.id } 
+            }
+        });
         if (existingCategory) {
             throw new ConflictException('Existing Category Name');
         }
@@ -36,7 +41,6 @@ export class CategoryService {
             throw new NotFoundException('Category not found');
         }
 
-        console.log(category);
         if (!this.isOwn(category.user.id, user.id)) {
             throw new BadRequestException('You can only manage your own');
         }
