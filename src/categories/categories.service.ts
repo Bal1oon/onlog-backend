@@ -17,7 +17,7 @@ export class CategoryService {
 
         const existingCategory = await this.categoryRepository.findOne({
             where: { 
-                name: name.trim().toUpperCase(), 
+                name: name.trim(),
                 user: { id: user.id } 
             }
         });
@@ -25,7 +25,7 @@ export class CategoryService {
             throw new ConflictException('Existing Category Name');
         }
 
-        const category = this.categoryRepository.create({ name, user });
+        const category = this.categoryRepository.create({ name: name.trim(), user });
         await this.categoryRepository.save(category);
 
         return category;
