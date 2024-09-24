@@ -8,6 +8,7 @@ import { User } from 'src/users/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { PostAuthGuard } from './guards/post-auth.guard';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostTopic } from './enums/post-topic.enum';
 
 @Controller('posts')
 export class PostController {
@@ -45,6 +46,21 @@ export class PostController {
     ): Promise<PostEntity> {
         const user: User = req.user;
         return this.postService.getPostById(id, user);
+    }
+
+    @Get('/topic/:topic')
+    @UseGuards(PostAuthGuard)
+    getAllPostsInTopic(
+        @Param('topic') topic: string,
+        @Request() req,
+    ): Promise<PostEntity[]> {
+        const userId: number = req.user ? req.user.id : null;
+
+        if (userId) { this.logger.log(`User ${userId} trying to access all posts in topic ${ topic }`); }
+        else { this.logger.warn(`Anonymous user trying to access all posts in topic ${ topic }`); }
+
+        const nomalizedTopic = topic.toUpperCase() as PostTopic
+        return this.postService.getAllPostsInTopic(nomalizedTopic, userId);
     }
 
     @Post()

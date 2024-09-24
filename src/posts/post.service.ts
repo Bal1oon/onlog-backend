@@ -5,6 +5,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { PostStatus } from './enums/post-status.enum';
 import { User } from 'src/users/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostTopic } from './enums/post-topic.enum';
 
 @Injectable()
 export class PostService {
@@ -37,6 +38,41 @@ export class PostService {
         }
 
         return found;
+    }
+
+    getAllPostsInTopic(topic: PostTopic, userId?: number, ): Promise<PostEntity[]> {
+        if (userId) {
+            return this.postRepository.find({
+                where: [
+                    { topic, deletedAt: null, status: PostStatus.PUBLIC },
+                    { topic, deletedAt: null, status: PostStatus.PRIVATE, user: { id: userId } }
+                ],
+                relations: ['user'],
+                select: {
+                    user: {
+                        id: true,
+                        email: true,
+                        username: true
+                    }
+                },
+                order: {
+                    createdAt: 'DESC'
+                }
+            });
+        } else {
+            return this.postRepository.find({ 
+                where: { topic, deletedAt: null, status: PostStatus.PUBLIC },
+                relations: ['user'],
+                select: {
+                    user: {
+                        id: true,
+                        email: true,
+                        username: true
+                    }
+                },
+                order: { createdAt: 'DESC' }
+            });
+        }
     }
 
     // 게시물 생성
