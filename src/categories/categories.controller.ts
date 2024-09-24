@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CategoryService } from './categories.service';
 import { AuthGuard } from '@nestjs/passport';
-import { CategoryRequestDto as CategoryRequestDto } from './dto/category-request.dto';
+import { CategoryRequestDto } from './dto/category-request.dto';
 import { User } from 'src/users/user.entity';
 import { Category } from './category.entity';
 
@@ -42,5 +42,13 @@ export class CategoryController {
     ): Promise<Category> {
         const user: User = req.user;
         return this.categoryService.updateCategory(id, categoryRequestDto, user);
+    }
+
+    @Get()
+    getOwnAllCategory(
+        @Req() req
+    ): Promise<Category[]> {
+        const user: User = req.user;
+        return this.categoryService.getOwnAllCategory(user);
     }
 }

@@ -72,4 +72,8 @@ export class CategoryService {
 
         return category;
     }
+
+    async getOwnAllCategory(user: User): Promise<Category[]> {
+        return await this.categoryRepository.find({ where: { user: { id: user.id} }});
+    }
 }
