@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostEntity } from './post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -87,7 +87,7 @@ export class PostController {
         return this.postService.updatePostStatus(id, status, user);
     }
 
-    @Patch('/:id/delete')
+    @Delete('/:id/delete')
     @UseGuards(AuthGuard())
     deletePost(
         @Param('id', ParseIntPipe) id: number,
@@ -109,7 +109,7 @@ export class PostController {
         return this.postService.likePostToggle(id, user);
     }
 
-    @Patch('/:id/update')
+    @Patch('/:id')
     @UseGuards(AuthGuard())
     @UsePipes(ValidationPipe)
     updatePost(

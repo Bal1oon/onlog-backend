@@ -47,7 +47,7 @@ export class CommentsController {
         return this.commentService.createComment(createCommentDto, user, postId);
     }
 
-    @Patch('/:postId/comments/:id')
+    @Delete('/:postId/comments/:id')
     deleteComment(
         @Param('postId', ParseIntPipe) postId: number,
         @Param('id', ParseIntPipe) id: number,

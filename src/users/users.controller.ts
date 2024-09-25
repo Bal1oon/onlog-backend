@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -25,7 +25,7 @@ export class UsersController {
         return this.userService.updateUser(id, updateUserDto, user);
     }
 
-    @Patch('/:id/follow')
+    @Post('/:id/follow')
     @UseGuards(AuthGuard())
     followUser(
         @Param('id', ParseIntPipe) id: number,
@@ -35,7 +35,7 @@ export class UsersController {
         return this.userService.followUser(id, user);
     }
 
-    @Patch('/:id/unfollow')
+    @Delete('/:id/follow')
     @UseGuards(AuthGuard())
     unfollowUser(
         @Param('id', ParseIntPipe) id: number,

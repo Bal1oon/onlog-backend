@@ -23,15 +23,14 @@ export class CategoryController {
     @Delete('/:id')
     async deleteCategory(
         @Param('id', ParseIntPipe) id: number,
-        @Req() req,
-        @Res() res
-    ): Promise<void> {
+        @Req() req
+    ): Promise<{ message: string; description: string; status: number }> {
         await this.categoryService.deleteCategory(id, req.user);
-        return res.json({
+        return {
             message: "Success",
             description: `Category id ${ id } deleted`,
             status: 200
-        })
+        };
     }
 
     @Patch(':/id')
