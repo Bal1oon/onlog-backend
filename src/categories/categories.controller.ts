@@ -33,7 +33,7 @@ export class CategoryController {
         };
     }
 
-    @Patch(':/id')
+    @Patch('/:id')
     updateCategory(
         @Param('id', ParseIntPipe) id: number,
         @Body() categoryRequestDto: CategoryRequestDto,
