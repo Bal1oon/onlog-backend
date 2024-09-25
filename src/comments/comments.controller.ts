@@ -58,7 +58,7 @@ export class CommentsController {
         return this.commentService.deleteComment(id, user);
     }
 
-    @Patch('/:postId/comments/:id/update')
+    @Patch('/:postId/comments/:id')
     @UsePipes(ValidationPipe)
     updateComment(
         @Param('postId', ParseIntPipe) postId: number,
