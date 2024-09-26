@@ -33,7 +33,8 @@ export class SummaryService {
             },
             option: {
                 language: dataOption.language,
-                model: dataOption.model,
+                // model: dataOption.model,
+                model: 'asdf',
                 tone: dataOption.tone,
                 summaryCount: dataOption.summaryCount
             },
@@ -43,16 +44,20 @@ export class SummaryService {
             const response = await lastValueFrom(
                 this.httpService.post(url, data, { headers }),
             );
-            if (response.status === 200) { return response.data.summary; }
-            else { this.handleErrorResponse(response) }
+            return response.data.summary;
         } catch (error) {
-            throw new InternalServerErrorException('Failed to summarize content: ' + error.message);
+            if (error.response) {
+                this.handleErrorResponse(error.response);
+            } else {
+                this.logger.error('Unexpected error occerred', error);
+                throw new InternalServerErrorException('Failed to summarize content: ' + error.message);
+            }
         }
     }
 
     private handleErrorResponse(response: any) {
         if (response.status === 400) {
-            switch (response.data.errorCode) {
+            switch (response.data.error.errorCode) {
                 case 'E001':
                     throw new BadRequestException('빈 문자열 or blank 문자');
                 case 'E002':
