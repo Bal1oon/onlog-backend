@@ -4,12 +4,14 @@ import { CategoryRepository } from './category.repository';
 import { CategoryRequestDto } from './dto/category-request.dto';
 import { Category } from './category.entity';
 import { User } from 'src/users/user.entity';
+import { UserRepository } from 'src/users/user.repository';
 
 @Injectable()
 export class CategoryService {
     constructor(
         @InjectRepository(CategoryRepository)
         private readonly categoryRepository: CategoryRepository,
+        private readonly userRepository: UserRepository
     ) {}
 
     async createCategory(categoryRequestDto: CategoryRequestDto, user: User): Promise<Category> {
@@ -75,5 +77,10 @@ export class CategoryService {
 
     async getOwnAllCategory(user: User): Promise<Category[]> {
         return await this.categoryRepository.find({ where: { user: { id: user.id} }});
+    }
+
+    async getUserCategories(username: string): Promise<Category[]> {
+        const user = await this.userRepository.getUserByUsername(username);
+        return await this.categoryRepository.find({ where: { user: { username } } });
     }
 }
