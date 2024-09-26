@@ -12,6 +12,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
   ],
   controllers: [CategoryController],
-  providers: [CategoryService, CategoryRepository]
+  providers: [CategoryService, CategoryRepository],
+  exports: [CategoryRepository]
 })
 export class CategoriesModule {}

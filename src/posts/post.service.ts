@@ -6,10 +6,16 @@ import { PostStatus } from './enums/post-status.enum';
 import { User } from 'src/users/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostTopic } from './enums/post-topic.enum';
+import { UserRepository } from 'src/users/user.repository';
+import { CategoryRepository } from 'src/categories/category.repository';
 
 @Injectable()
 export class PostService {
-    constructor(private readonly postRepository: PostRepository) {}
+    constructor(
+        private readonly postRepository: PostRepository,
+        private readonly userRepository: UserRepository,
+        private readonly categoryRepository: CategoryRepository
+    ) {}
 
     // 게시물 전체 가져오기
     getAllPosts(userId?: number): Promise<PostEntity[]> {
@@ -73,6 +79,15 @@ export class PostService {
                 order: { createdAt: 'DESC' }
             });
         }
+    }
+
+    async getUserPostsByCategory(username: string, categoryName: string): Promise<PostEntity[]> {
+        const user = await this.userRepository.getUserByUsername(username);
+        const category = await this.categoryRepository.findOne({ where: { name: categoryName } });
+        if (!category) { throw new NotFoundException(`Category ${ categoryName } not found`); }
+        
+        const posts = this.postRepository.find({ where: { user: { username }, category: { name: categoryName } } });
+        return posts;
     }
 
     // 게시물 생성

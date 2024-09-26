@@ -63,6 +63,14 @@ export class PostController {
         return this.postService.getAllPostsInTopic(nomalizedTopic, userId);
     }
 
+    @Get('/users/:username/category/:categoryName')
+    getUserPostsByCategory(
+        @Param('username') username: string,
+        @Param('categoryName') categoryName: string
+    ): Promise<PostEntity[]> {
+        return this.postService.getUserPostsByCategory(username, categoryName);
+    }
+
     @Post()
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard())

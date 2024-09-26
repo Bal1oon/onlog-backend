@@ -5,6 +5,8 @@ import { PostRepository } from './post.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostEntity } from './post.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { CategoryRepository } from 'src/categories/category.repository';
+import { UserRepository } from 'src/users/user.repository';
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule
   ],
   controllers: [PostController],
-  providers: [PostService, PostRepository],
+  providers: [PostService, PostRepository, CategoryRepository, UserRepository],
   exports: [PostService]
 })
 export class PostModule {}
