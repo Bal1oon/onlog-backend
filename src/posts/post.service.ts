@@ -8,13 +8,15 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostTopic } from './enums/post-topic.enum';
 import { UserRepository } from 'src/users/user.repository';
 import { CategoryRepository } from 'src/categories/category.repository';
+import { SummaryService } from './summary.service';
 
 @Injectable()
 export class PostService {
     constructor(
         private readonly postRepository: PostRepository,
         private readonly userRepository: UserRepository,
-        private readonly categoryRepository: CategoryRepository
+        private readonly categoryRepository: CategoryRepository,
+        private readonly summaryService: SummaryService,
     ) {}
 
     // 게시물 전체 가져오기
@@ -91,8 +93,12 @@ export class PostService {
     }
 
     // 게시물 생성
-    createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
-        return this.postRepository.createPost(createPostDto, user);
+    async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
+        const summary = await this.summaryService.summarizeContent(createPostDto.content); 
+        const post = this.postRepository.create({ ...createPostDto, summary, user });
+        await this.postRepository.save(post);
+
+        return post;
     }
 
     // 게시물 상태 변경

@@ -16,8 +16,11 @@ export class PostEntity extends BaseEntity {
     @Column()
     content: string;
 
+    @Column({ nullable: true })
+    summary: string;
+
     // 공개/비공개
-    @Column()
+    @Column({ default: PostStatus.PUBLIC })
     status: PostStatus;
 
     @Column({nullable: true})   // 구현 후 null 제거
