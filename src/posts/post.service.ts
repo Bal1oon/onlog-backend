@@ -132,6 +132,18 @@ export class PostService {
     async updatePost(id: number, updatePostDto: UpdatePostDto, user: User): Promise<PostEntity> {
         const post = await this.getPostById(id, user);
         await this.isOwnPost(post, user);
+
+        const { title, content, topic } = updatePostDto;
+        let summary: string;
+        if (content) {
+            summary = await this.summaryService.summarizeContent(content);
+        }
+
+        post.title = title ?? post.title;
+        post.content = content ?? post.content;
+        post.summary = summary ?? post.summary;
+        post.topic = topic ?? post.topic;
+
         return this.postRepository.updatePost(post, updatePostDto);
     }
 }
