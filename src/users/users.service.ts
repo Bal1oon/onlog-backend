@@ -50,4 +50,9 @@ export class UsersService {
 
         return this.userRepository.unfollowUser(userToUnfollow, currentUser);
     }
+
+    async deactivateUser(id: number): Promise<User> {
+        const user = await this.userRepository.getUserById(id);
+        return await this.userRepository.deleteUser(user);
+    }
 }

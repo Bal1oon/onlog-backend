@@ -114,4 +114,9 @@ export class UserRepository extends Repository<User> {
         user.refreshTokenExpiresAt = expiresAt;
         await this.save(user);
     }
+
+    async deleteUser(user: User): Promise<User> {
+        await user.softRemove();
+        return user;
+    }
 }

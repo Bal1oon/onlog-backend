@@ -1,7 +1,7 @@
 import { Category } from "src/categories/category.entity";
 import { CommentEntity } from "src/comments/comment.entity";
 import { PostEntity } from "src/posts/post.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 
 @Entity()
 @Unique(['email'])
@@ -58,4 +58,7 @@ export class User extends BaseEntity {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @DeleteDateColumn({ nullable: true })
+    deletedAt: Date;
 }

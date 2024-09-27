@@ -44,4 +44,11 @@ export class UsersController {
         const user: User = req.user;
         return this.userService.unfollowUser(id, user);
     }
+
+    @Delete()
+    @UseGuards(AuthGuard())
+    deactivateUser(@Request() req): Promise<User> {
+        const id = req.user.id;
+        return this.userService.deactivateUser(id);
+    }
 }
