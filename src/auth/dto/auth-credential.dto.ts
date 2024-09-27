@@ -9,6 +9,7 @@ export class AuthCredentialDto {
     @IsOptional()
     @MinLength(4)
     @MaxLength(20)
+    @Matches(/^\S*$/, { message: 'Username cannot contain spaces' })
     username?: string
 
     @IsString()
