@@ -13,16 +13,15 @@ export class UsersController {
         return this.userService.getUserByUsername(username);
     }
 
-    @Patch('/:id')
+    @Patch()
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard())
     updateUser(
-        @Param('id', ParseIntPipe) id: number,
         @Body() updateUserDto: UpdateUserDto,
         @Request() req
     ): Promise<User> {
         const user: User = req.user;
-        return this.userService.updateUser(id, updateUserDto, user);
+        return this.userService.updateUser(updateUserDto, user);
     }
 
     @Post('/:id/follow')

@@ -11,13 +11,8 @@ export class UsersService {
         return this.userRepository.getUserByUsername(username);
     }
 
-    async updateUser(id: number, updateUserDto: UpdateUserDto, user: User): Promise<User> {
-        const found = await this.userRepository.getUserById(id);
-
-        if (user.id !== id) {
-            throw new ForbiddenException('You can update only your information.');
-        }
-
+    async updateUser(updateUserDto: UpdateUserDto, user: User): Promise<User> {
+        const found = await this.userRepository.getUserById(user.id);
         return this.userRepository.updateUser(updateUserDto, found);
     }
 
