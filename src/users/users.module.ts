@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { AuthModule } from 'src/auth/auth.module';
+import { PermanentDeleteUserService } from './permanent-delete-user.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { AuthModule } from 'src/auth/auth.module';
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository],
+  providers: [UsersService, UserRepository, PermanentDeleteUserService],
   exports: [UserRepository],
 })
 export class UsersModule {}
