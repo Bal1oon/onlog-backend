@@ -12,8 +12,7 @@ export class UsersService {
     }
 
     async updateUser(updateUserDto: UpdateUserDto, user: User): Promise<User> {
-        const found = await this.userRepository.getUserById(user.id);
-        return this.userRepository.updateUser(updateUserDto, found);
+        return this.userRepository.updateUser(updateUserDto, user);
     }
 
     async followUser(id: number, user: User): Promise<User> {
