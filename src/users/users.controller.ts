@@ -51,4 +51,9 @@ export class UsersController {
         const id = req.user.id;
         return this.userService.deactivateUser(id);
     }
+
+    @Post('/:id/recover')
+    activateUser(@Param('id') id: number): Promise<User> {
+        return this.userService.activateUser(id);
+    }
 }

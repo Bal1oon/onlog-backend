@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -52,7 +52,52 @@ export class UsersService {
     }
 
     async deactivateUser(id: number): Promise<User> {
-        const user = await this.userRepository.getUserById(id);
+        const user = await this.userRepository.findOne({ where: { id }, relations: ['followed', 'following', 'following.followed'] });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        await this.resetFollow(user);
         return await this.userRepository.deleteUser(user);
+    }
+
+    async activateUser(id: number): Promise<User> {
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .withDeleted()
+            .where('user.id = :id', { id })
+            .getOne();
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        
+        user.deletedAt = null
+        await this.userRepository.save(user);
+        return user;
+    }
+
+    async resetFollow(user: User): Promise<void> {
+        console.log(user.followed, user.following);
+        const followingPromises = user.following.map(async followingUser => {
+            followingUser.followed = followingUser.followed.filter(f => f.id !== user.id);
+            return this.userRepository.save(followingUser);
+        });
+    
+        const followers = await this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.following', 'following')
+            .where('following.id = :id', { id: user.id })
+            .getMany();
+    
+        const followerPromises = followers.map(async follower => {
+            follower.following = follower.following.filter(f => f.id !== user.id);
+            return this.userRepository.save(follower);
+        });
+    
+        await Promise.all([...followingPromises, ...followerPromises]);
+    
+        user.followed = [];
+        user.following = [];
+        await this.userRepository.save(user);
     }
 }
