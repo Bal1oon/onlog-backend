@@ -57,7 +57,7 @@ export class UsersService {
             throw new NotFoundException('User not found');
         }
 
-        await this.resetFollow(user);
+        // await this.resetFollow(user);    // softRemove하면 상대에겐 user가 보이지 않음
         return await this.userRepository.deleteUser(user);
     }
 
@@ -71,7 +71,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException('User not found');
         }
-        
+
         user.deletedAt = null
         await this.userRepository.save(user);
         return user;
