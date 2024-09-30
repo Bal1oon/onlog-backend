@@ -51,33 +51,33 @@ export class UserRepository extends Repository<User> {
         return found;
     }
 
-    async createUser(authCredentialDto: AuthCredentialDto): Promise<void> {
-        const { email, username, password } = authCredentialDto;
+    // async createUser(authCredentialDto: AuthCredentialDto): Promise<void> {
+    //     const { email, username, password } = authCredentialDto;
 
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);
+    //     const salt = await bcrypt.genSalt();
+    //     const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = this.create({
-            email,
-            username, 
-            password: hashedPassword,
-            description: ''
-        });
+    //     const user = this.create({
+    //         email,
+    //         username, 
+    //         password: hashedPassword,
+    //         description: ''
+    //     });
 
-        try {
-            await this.save(user);
-        } catch (error) {
-            if (error.code === '23505') {
-                if (error.detail.includes('Key (email)')) {
-                    throw new ConflictException('Existing Email');
-                } else {
-                    throw new ConflictException('Existing Username');
-                }
-            } else{
-                throw new InternalServerErrorException();
-            }
-        }
-    }
+    //     try {
+    //         await this.save(user);
+    //     } catch (error) {
+    //         if (error.code === '23505') {
+    //             if (error.detail.includes('Key (email)')) {
+    //                 throw new ConflictException('Existing Email');
+    //             } else {
+    //                 throw new ConflictException('Existing Username');
+    //             }
+    //         } else{
+    //             throw new InternalServerErrorException();
+    //         }
+    //     }
+    // }
 
     async updateUser(updateUserDto: UpdateUserDto, user: User): Promise<User> {
         const { username, password, description, profileImage } = updateUserDto;

@@ -24,8 +24,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
 
     async validate(payload: any) {
         const { id } = payload;
-
-        const user: User = await this.userRepository.getUserById(id);
+        const user: User = await this.userRepository.findOne({ where: { id }, select: { id } });
 
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');

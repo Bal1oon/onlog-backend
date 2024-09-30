@@ -19,7 +19,7 @@ export class User extends BaseEntity {
     @Column()
     username: string;
 
-    @Column()
+    @Column({ default: '' })
     description: string;
 
     @Column({ nullable: true })

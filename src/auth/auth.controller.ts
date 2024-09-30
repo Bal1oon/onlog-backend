@@ -1,8 +1,9 @@
 import { Body, Controller, Logger, Post, Req, Res, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { LocalGuard } from './guards/local.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { User } from 'src/users/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -13,8 +14,8 @@ export class AuthController {
 
     @Post('/signup')
     @UsePipes(ValidationPipe)
-    signUp(@Body() authCredentialDto: AuthCredentialDto): Promise<void> {
-        return this.authService.createUser(authCredentialDto);
+    signUp(@Body() registerUserDto: RegisterUserDto): Promise<User> {
+        return this.authService.registerUser(registerUserDto);
     }
 
     @Post('/login')
@@ -24,19 +25,23 @@ export class AuthController {
 
         res.setHeader('Authorization', 'Bearer ' + accessToken);
         res.cookie('accessToken', accessToken, {
-          httpOnly: true,
+            httpOnly: true,
         });
         res.cookie('refreshToken', refreshToken, {
-          httpOnly: true,
+            httpOnly: true,
         });
+
+        this.logger.log(`User '${req.user.id}' logged in successfully.`);
+
         return {
-          message: 'login success',
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+            message: 'Login success',
+            accessToken: accessToken,
+            refreshToken: refreshToken,
         };
     }
 
     @Post('/refresh')
+    @UseGuards(JwtRefreshGuard)
     async refreshToken(@Req() req, @Res() res): Promise<{ accessToken: string }> {
         const refreshTokenFromCookie = req.cookies.refreshToken;
         if (!refreshTokenFromCookie) {
@@ -49,10 +54,12 @@ export class AuthController {
             httpOnly: true,
         });
 
+        this.logger.log(`User ${req.user.id} issued new access token successfully.`);
+
         return res.json({
             message: 'Issued access token successfully',
             accessToken: newAccessToken
-          });
+        });
     }
 
     @Post('/logout')
@@ -64,7 +71,8 @@ export class AuthController {
         res.clearCookie('accessToken');
         res.clearCookie('refreshToken');
 
-        this.logger.log(`INFO: User ${ userId } has logged out successfully.`);
+        this.logger.log(`User ${userId} has logged out successfully.`);
+
         return res.json({ message: 'Logout successful' });
     }
 }
