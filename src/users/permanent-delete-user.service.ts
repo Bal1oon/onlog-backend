@@ -23,8 +23,9 @@ export class PermanentDeleteUserService {
                 .getMany();
 
             if (expiredUsers.length > 0) {
+                const deletedUserIds = expiredUsers.map(user => user.id);
                 await this.userRepository.remove(expiredUsers);
-                this.logger.log(`Deleted ${expiredUsers.length} users permanently.`);
+                this.logger.log(`Deleted ${expiredUsers.length} users permanently: ${deletedUserIds.join(', ')}`);
             } else {
                 this.logger.log('No expired users to delete.');
             }
