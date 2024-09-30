@@ -17,6 +17,7 @@ export class PermanentDeleteUserService {
         try {
             const expiredUsers = await this.userRepository
                 .createQueryBuilder('user')
+                .withDeleted()
                 .where('user.deletedAt IS NOT NULL')
                 .andWhere('user.deletedAt < :expirationDate', { expirationDate })
                 .getMany();
