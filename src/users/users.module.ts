@@ -6,6 +6,8 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { PermanentDeleteUserService } from './permanent-delete-user.service';
+import { PostRepository } from 'src/posts/post.repository';
+import { CommentRepository } from 'src/comments/comment.repository';
 
 @Module({
   imports: [
@@ -13,7 +15,11 @@ import { PermanentDeleteUserService } from './permanent-delete-user.service';
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository, PermanentDeleteUserService],
+  providers: [
+    UsersService, UserRepository, PermanentDeleteUserService,
+    PostRepository,
+    CommentRepository
+  ],
   exports: [UserRepository],
 })
 export class UsersModule {}
