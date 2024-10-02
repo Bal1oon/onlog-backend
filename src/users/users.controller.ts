@@ -3,6 +3,9 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { RoleGuard } from 'src/auth/guards/role.guard';
+import { Role } from 'src/auth/decorators/role.decorator';
+import { UserRole } from './enums/user-role.enum';
 
 @Controller('users')
 export class UsersController {
@@ -52,6 +55,8 @@ export class UsersController {
     }
 
     @Post('/:id/recover')
+    @UseGuards(AuthGuard(), RoleGuard)
+    @Role(UserRole.ADMIN)
     activateUser(@Param('id') id: number): Promise<User> {
         return this.userService.activateUser(id);
     }

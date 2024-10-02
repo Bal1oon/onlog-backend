@@ -2,6 +2,7 @@ import { Category } from "src/categories/category.entity";
 import { CommentEntity } from "src/comments/comment.entity";
 import { PostEntity } from "src/posts/post.entity";
 import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
+import { UserRole } from "./enums/user-role.enum";
 
 @Entity()
 @Unique(['email'])
@@ -9,6 +10,9 @@ import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTab
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column({ default: UserRole.USER })
+    role: UserRole;
 
     @Column()
     email: string;
