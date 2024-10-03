@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommentsModule } from './comments/comments.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TagModule } from './tag/tag.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
     CommentsModule,
     CategoriesModule,
+    TagModule,
   ],
 })
 export class AppModule {}
