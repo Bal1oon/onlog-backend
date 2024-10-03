@@ -60,4 +60,11 @@ export class UsersController {
     activateUser(@Param('id') id: number): Promise<User> {
         return this.userService.activateUser(id);
     }
+
+    @Patch('/:id/role')
+    @UseGuards(AuthGuard(), RoleGuard)
+    @Role(UserRole.ADMIN)
+    updateRole(@Param('id') id: number): Promise<User> {
+        return this.userService.updateRole(id);
+    }
 }

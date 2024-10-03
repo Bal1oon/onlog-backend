@@ -1,10 +1,12 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRole } from './enums/user-role.enum';
 
 @Injectable()
 export class UsersService {
+    private logger = new Logger('UserService');
     constructor(private readonly userRepository: UserRepository) {}
 
     getUserByUsername(username: string): Promise<User> {
@@ -93,5 +95,17 @@ export class UsersService {
         user.followed = [];
         user.following = [];
         await this.userRepository.save(user);
+    }
+
+    async updateRole(id: number): Promise<User> {
+        const user = await this.userRepository.getUserById(id);
+        const role = user.role;
+
+        user.role = (role === UserRole.ADMIN) ? UserRole.USER : UserRole.ADMIN;
+
+        await this.userRepository.save(user);
+        this.logger.log(`User ${id} role was changed to ${user.role}`);
+
+        return user;
     }
 }
