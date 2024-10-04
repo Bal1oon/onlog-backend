@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PostEntity } from './post.entity';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -11,6 +11,8 @@ import { CategoryRepository } from 'src/categories/category.repository';
 import { SummaryService } from './summary.service';
 import { Tag } from 'src/tag/tag.entity';
 import { TagService } from 'src/tag/tag.service';
+import { CreateTagDto } from 'src/tag/dto/create-tag.dto';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class PostService {
@@ -98,20 +100,34 @@ export class PostService {
     // 게시물 생성
     async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
         const summary = await this.summaryService.summarizeContent(createPostDto.content);
-        const tags = await this.createTag(createPostDto.tags.split(' '));
-
+        
+        const tagNames = createPostDto.tags.split(' ');
+        const createTagDtos: CreateTagDto[] = tagNames.map(tagName => {
+            const createTagDto = new CreateTagDto();
+            createTagDto.name = tagName.trim();
+            return createTagDto;
+        });
+    
+        const tags = await this.createTag(createTagDtos);
+    
         const post = this.postRepository.create({ ...createPostDto, tags, summary, user });
         await this.postRepository.save(post);
-
+    
         return post;
     }
+    
 
-    async createTag(tagNames: string[]): Promise<Tag[]> {       
+    async createTag(createTagDtos: CreateTagDto[]): Promise<Tag[]> {       
         const tags: Tag[] = await Promise.all(
-            tagNames.map(async (tagName) => {
-                let tag = await this.tagService.getTagByName(tagName);
+            createTagDtos.map(async (createTagDto) => {
+                const errors = await validate(createTagDto);
+                if (errors.length > 0) {
+                    throw new BadRequestException(`Tag '${createTagDto.name}' is invalid: ${errors.map(err => Object.values(err.constraints)).join(', ')}`);
+                }
+
+                let tag = await this.tagService.getTagByName(createTagDto.name);
                 if (!tag) {
-                    tag = await this.tagService.createTag({ name: tagName });
+                    tag = await this.tagService.createTag(createTagDto);
                 }
                 return tag;
             }),
@@ -157,16 +173,24 @@ export class PostService {
         if (content) {
             summary = await this.summaryService.summarizeContent(content);
         }
-
+    
         post.title = title ?? post.title;
         post.content = content ?? post.content;
         post.summary = summary ?? post.summary;
         post.topic = topic ?? post.topic;
-
+    
         if (tags) {
-            post.tags = await this.createTag(tags.split(' '));
-        }
+            const tagNames = tags.split(' ');
+            const createTagDtos: CreateTagDto[] = tagNames.map(tagName => {
+                const createTagDto = new CreateTagDto();
+                createTagDto.name = tagName.trim();
+                return createTagDto;
+            });
 
+            const newTags = await this.createTag(createTagDtos);
+            post.tags = newTags;
+        }
+    
         return this.postRepository.updatePost(post, updatePostDto);
     }
 }
