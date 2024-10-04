@@ -15,4 +15,7 @@ export class CreatePostDto {
 
     @IsEnum(PostTopic)
     topic: PostTopic;
+
+    @IsOptional()
+    tags: string;
 }

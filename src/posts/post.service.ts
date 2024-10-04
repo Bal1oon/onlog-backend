@@ -9,6 +9,8 @@ import { PostTopic } from './enums/post-topic.enum';
 import { UserRepository } from 'src/users/user.repository';
 import { CategoryRepository } from 'src/categories/category.repository';
 import { SummaryService } from './summary.service';
+import { Tag } from 'src/tag/tag.entity';
+import { TagService } from 'src/tag/tag.service';
 
 @Injectable()
 export class PostService {
@@ -17,6 +19,7 @@ export class PostService {
         private readonly userRepository: UserRepository,
         private readonly categoryRepository: CategoryRepository,
         private readonly summaryService: SummaryService,
+        private readonly tagService: TagService,
     ) {}
 
     // 게시물 전체 가져오기
@@ -94,11 +97,27 @@ export class PostService {
 
     // 게시물 생성
     async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
-        const summary = await this.summaryService.summarizeContent(createPostDto.content); 
-        const post = this.postRepository.create({ ...createPostDto, summary, user });
+        const summary = await this.summaryService.summarizeContent(createPostDto.content);
+        const tags = await this.createTag(createPostDto.tags.split(' '));
+
+        const post = this.postRepository.create({ ...createPostDto, tags, summary, user });
         await this.postRepository.save(post);
 
         return post;
+    }
+
+    async createTag(tagNames: string[]): Promise<Tag[]> {       
+        const tags: Tag[] = await Promise.all(
+            tagNames.map(async (tagName) => {
+                let tag = await this.tagService.getTagByName(tagName);
+                if (!tag) {
+                    tag = await this.tagService.createTag({ name: tagName });
+                }
+                return tag;
+            }),
+        );
+
+        return tags;
     }
 
     // 게시물 상태 변경
@@ -133,7 +152,7 @@ export class PostService {
         const post = await this.getPostById(id, user);
         await this.isOwnPost(post, user);
 
-        const { title, content, topic } = updatePostDto;
+        const { title, content, topic, tags } = updatePostDto;
         let summary: string;
         if (content) {
             summary = await this.summaryService.summarizeContent(content);
@@ -143,6 +162,10 @@ export class PostService {
         post.content = content ?? post.content;
         post.summary = summary ?? post.summary;
         post.topic = topic ?? post.topic;
+
+        if (tags) {
+            post.tags = await this.createTag(tags.split(' '));
+        }
 
         return this.postRepository.updatePost(post, updatePostDto);
     }

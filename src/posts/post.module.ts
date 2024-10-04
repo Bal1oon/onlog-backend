@@ -9,12 +9,15 @@ import { CategoryRepository } from 'src/categories/category.repository';
 import { UserRepository } from 'src/users/user.repository';
 import { SummaryService } from './summary.service';
 import { HttpModule } from '@nestjs/axios';
+import { TagService } from 'src/tag/tag.service';
+import { TagModule } from 'src/tag/tag.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PostEntity]),
     AuthModule,
     HttpModule,
+    TagModule,
   ],
   controllers: [PostController],
   providers: [

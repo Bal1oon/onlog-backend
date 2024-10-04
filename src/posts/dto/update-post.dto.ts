@@ -1,5 +1,6 @@
 import { IsEnum, IsOptional, IsString } from "class-validator"
 import { PostTopic } from "../enums/post-topic.enum"
+import { Tag } from "src/tag/tag.entity"
 
 export class UpdatePostDto {
     @IsOptional()
@@ -13,4 +14,8 @@ export class UpdatePostDto {
     @IsOptional()
     @IsEnum(PostTopic)
     topic: PostTopic
+
+    @IsOptional()
+    @IsString()
+    tags: string
 }
