@@ -101,12 +101,7 @@ export class PostService {
     async createPost(createPostDto: CreatePostDto, user: User): Promise<PostEntity> {
         const summary = await this.summaryService.summarizeContent(createPostDto.content);
         
-        const tagNames = createPostDto.tags.split(' ');
-        const createTagDtos: CreateTagDto[] = tagNames.map(tagName => {
-            const createTagDto = new CreateTagDto();
-            createTagDto.name = tagName.trim();
-            return createTagDto;
-        });
+        const createTagDtos: CreateTagDto[] = this.transformToDto(createPostDto.tags);
     
         const tags = await this.createTag(createTagDtos);
     
@@ -116,6 +111,16 @@ export class PostService {
         return post;
     }
     
+    private transformToDto(tags: string): CreateTagDto[] {
+        const tagNames = tags.split(' ');
+        const createTagDtos: CreateTagDto[] = tagNames.map(tagName => {
+            const createTagDto = new CreateTagDto();
+            createTagDto.name = tagName.trim();
+            return createTagDto;
+        });
+
+        return createTagDtos;
+    }
 
     async createTag(createTagDtos: CreateTagDto[]): Promise<Tag[]> {       
         const tags: Tag[] = await Promise.all(
